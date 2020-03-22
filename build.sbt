@@ -1,5 +1,5 @@
 
-name := "RealEstate"
+name := "Skeleton"
 
 version := "0.1"
 
@@ -79,4 +79,4 @@ lazy val root = (project in file("."))
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
-mainClass in(Compile, run) := Some("com.realestate.Main")
+mainClass in(Compile, run) := Some("com.skeleton.Main")
