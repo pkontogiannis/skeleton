@@ -28,7 +28,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   }
 
   def createUser(data: UserCreate): Future[Either[DatabaseError, User]] = {
-    isExists(data.email).flatMap {
+    exists(data.email).flatMap {
       case true =>
         Future.successful(Left(RecordAlreadyExists))
       case false =>
@@ -53,7 +53,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
 
   }
 
-  def isExists(email: String): Future[Boolean] = db.run {
+  def exists(email: String): Future[Boolean] = db.run {
     Users.filter(_.email === email).exists.result
   }
 
