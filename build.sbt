@@ -24,6 +24,7 @@ lazy val scalaCheck = "1.14.3"
 lazy val neoTypesVersion = "0.7.0"
 lazy val neo4jVersion = "4.0.1"
 lazy val neo4jDriverVersion = "4.0.1"
+lazy val swaggerVersion = "1.0.7-SNAPSHOT"
 
 libraryDependencies ++= {
   Seq(
@@ -59,10 +60,7 @@ libraryDependencies ++= {
 
     "org.typelevel" %% "cats-core" % catsVersion,
 
-    "org.neo4j.driver" % "neo4j-java-driver" % neo4jDriverVersion,
-    "org.neo4j" % "neo4j-graphdb-api" % neo4jVersion,
-    "org.neo4j" % "neo4j-kernel" % neo4jVersion,
-    "org.neo4j" % "neo4j-ogm-embedded-driver" % "3.2.10"
+    "io.swagger" %% "swagger-scala-module" % swaggerVersion
   )
 }
 
