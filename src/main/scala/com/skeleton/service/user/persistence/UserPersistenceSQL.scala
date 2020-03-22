@@ -39,7 +39,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   def storeUser(data: UserCreate): Future[Either[DatabaseError, User]] = {
     val userRow = User(userId = UUID.randomUUID().toString,
       email = data.email,
-      //      password = data.password,
+      password = data.password,
       firstName = data.firstName, lastName = data.lastName, role = data.role)
 
     db.run((Users returning Users.map(_.id) into (
@@ -70,7 +70,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
 
   def loginUser(email: String, password: String): Future[Either[DatabaseError, User]] = {
     db.run(Users.filter(user =>
-      user.email === email //&& user.password === password
+      user.email === email && user.password === password
     ).result.headOption).
       transformWith {
         case Success(optUser) => optUser match {
