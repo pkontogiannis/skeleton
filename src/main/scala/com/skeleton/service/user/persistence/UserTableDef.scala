@@ -18,7 +18,7 @@ trait UserTableDef {
 
     def email: Rep[String] = column[String]("email", O.Unique)
 
-    //    def password: Rep[String] = column[String]("password")
+    def password: Rep[String] = column[String]("password")
 
     def firstName: Rep[String] = column[String]("first_name")
 
@@ -30,7 +30,7 @@ trait UserTableDef {
       id.?,
       userId,
       email,
-      //      password,
+      password,
       firstName,
       lastName,
       role

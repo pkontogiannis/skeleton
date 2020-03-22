@@ -1,10 +1,13 @@
 package com.skeleton.service.user
 
+import scala.language.implicitConversions
+
 object UserModel {
 
   case class User(id: Option[Int] = None,
                   userId: String,
                   email: String,
+                  password: String,
                   firstName: String,
                   lastName: String,
                   role: String)
@@ -19,18 +22,23 @@ object UserModel {
   case class UserCreate(email: String,
                         firstName: String,
                         lastName: String,
-                        //                        password: String,
+                        password: String,
                         role: String
                        )
 
   case class UpdateUser(
                          userId: Option[String],
-                         //                         password: Option[String],
+                         password: Option[String],
                          email: Option[String],
                          firstName: Option[String],
                          lastName: Option[String],
                          role: Option[String]
                        )
+
+  case class UserLogin(email: String, password: String)
+
+  case class UserLoginDto(email: String, accessToken: Token, refreshToken: Token,
+                          role: String, tokenType: String)
 
   case class Token(token: String, expiresIn: Int)
 
@@ -38,7 +46,7 @@ object UserModel {
     User(
       userId = updateUser.userId.getOrElse(userId),
       email = updateUser.email.getOrElse(""),
-      //      password = updateUser.password.getOrElse(""),
+      password = updateUser.password.getOrElse(""),
       firstName = updateUser.firstName.getOrElse(""),
       lastName = updateUser.lastName.getOrElse(""),
       role = updateUser.role.getOrElse("")
@@ -49,12 +57,13 @@ object UserModel {
       email = update.email.getOrElse(old.email),
       firstName = update.firstName.getOrElse(old.firstName),
       lastName = update.lastName.getOrElse(old.lastName),
-      //      password = update.password.getOrElse(old.password),
+      password = update.password.getOrElse(old.password),
       role = update.role.getOrElse(old.role)
     )
 
   implicit def userToUserDto(user: User): UserDto = {
     UserDto(user.userId, user.email, user.firstName, user.lastName, user.role)
   }
+
 
 }
