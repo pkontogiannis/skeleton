@@ -11,7 +11,8 @@ import scala.concurrent.{Await, Future}
 
 case class DBAccess(actorSystem: ActorSystem) extends Schema {
 
-  val db: Database = Database.forConfig("h2mem")
+  //  val db: Database = Database.forConfig("h2mem")
+  val db: Database = Database.forConfig("database")
 
   private val tables = List(Users)
 

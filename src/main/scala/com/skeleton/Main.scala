@@ -1,3 +1,5 @@
+package com.skeleton
+
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import com.skeleton.service.{Dependencies, Routes}

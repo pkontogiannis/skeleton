@@ -12,6 +12,16 @@ trait UserTableDef {
 
   class UserTable(tag: Tag) extends Table[User](tag, "Users") {
 
+    def * : ProvenShape[User] = (
+      id.?,
+      userId,
+      email,
+      password,
+      firstName,
+      lastName,
+      role
+    ) <> ((User.apply _).tupled, User.unapply)
+
     def id: Rep[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
 
     def userId: Rep[String] = column[String]("user_id", O.Unique)
@@ -25,16 +35,6 @@ trait UserTableDef {
     def lastName: Rep[String] = column[String]("last_name")
 
     def role: Rep[String] = column[String]("role")
-
-    def * : ProvenShape[User] = (
-      id.?,
-      userId,
-      email,
-      password,
-      firstName,
-      lastName,
-      role
-    ) <> ((User.apply _).tupled, User.unapply)
   }
 
 }
