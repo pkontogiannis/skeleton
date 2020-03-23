@@ -18,22 +18,6 @@ object DatabaseError {
 
 object ServiceError {
 
-  case object GenericDatabaseError extends DatabaseError
-
-  case object RecordNotFound extends DatabaseError
-
-  case object RecordAlreadyExists extends DatabaseError
-
-  case object InvalidData extends DatabaseError
-
-  case class NotAvailableData() extends ServiceError
-
-  case class AuthenticationError() extends ServiceError
-
-  case class InsertModeIsNotDefined(view: String) extends ServiceError
-
-  case class ClientServiceError(message: String) extends ServiceError
-
   val httpErrorMapper: PartialFunction[ServiceError, HttpError] = {
     case NotAvailableData() =>
       new MappingNotFoundErrorHttp {
@@ -50,6 +34,23 @@ object ServiceError {
     case AuthenticationError() => UnauthorizedErrorHttp()
     case GenericDatabaseError => InternalErrorHttp("Unexpected error")
     case InsertModeIsNotDefined(mode) => BadRequestErrorHttp(s"Unable to insert tasks with mode, $mode")
-    case InvalidData =>  BadRequestErrorHttp(s"The inserted data are not valid")
+    case InvalidData => BadRequestErrorHttp(s"The inserted data are not valid")
   }
+
+  case class NotAvailableData() extends ServiceError
+
+  case class AuthenticationError() extends ServiceError
+
+  case class InsertModeIsNotDefined(view: String) extends ServiceError
+
+  case class ClientServiceError(message: String) extends ServiceError
+
+  case object GenericDatabaseError extends DatabaseError
+
+  case object RecordNotFound extends DatabaseError
+
+  case object RecordAlreadyExists extends DatabaseError
+
+  case object InvalidData extends DatabaseError
+
 }

@@ -25,6 +25,7 @@ lazy val neoTypesVersion = "0.7.0"
 lazy val neo4jVersion = "4.0.1"
 lazy val neo4jDriverVersion = "4.0.1"
 lazy val swaggerVersion = "1.0.7-SNAPSHOT"
+lazy val postgresVersion = "42.2.11"
 
 libraryDependencies ++= {
   Seq(
@@ -50,7 +51,10 @@ libraryDependencies ++= {
 
     // ORM
     "com.typesafe.slick" %% "slick" % slickVersion,
-    "com.h2database" % "h2" % h2Version, // % Test,
+    "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
+    "org.postgresql" % "postgresql" % postgresVersion,
+
+    "com.h2database" % "h2" % h2Version % Test,
 
     // Logging dependencies
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
@@ -60,7 +64,7 @@ libraryDependencies ++= {
 
     "org.typelevel" %% "cats-core" % catsVersion,
 
-//    "io.swagger" %% "swagger-scala-module" % swaggerVersion
+    //    "io.swagger" %% "swagger-scala-module" % swaggerVersion
   )
 }
 
