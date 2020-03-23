@@ -4,32 +4,33 @@ services:
   skeletondb:
     image: postgres:12.2 # use 12.2 official postgres version
     restart: always
-    container_name: skeleton-db
+    container_name: skeleton_db
     env_file:
       - ./skeleton.env # configure postgres
-#    environment:
-#      POSTGRES_PASSWORD: skeletondb
-#      POSTGRES_USER: skeletondb
-#      POSTGRES_DB: jdbc:skeletondb://localhost/skeleton
     ports:
       - "5435:5432"
     volumes:
-      - skeleton-data:/var/lib/postgresql/data # persist data even if container shuts down
+      - skeleton-data:/var/lib/skeleton_db/data # persist data even if container shuts down
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skeletondb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   skeletonpgadmin:
     image: dpage/pgadmin4:4.19
-    container_name: skeleton-pgadmin
+    container_name: skeleton_pgadmin
+    restart: always
     ports:
       - 8005:80
     volumes:
-      - skeleton-pgadmin:/var/lib/pgadmin
+      - skeleton-pgadmin:/var/lib/skeleton_pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: root
       PGADMIN_DEFAULT_PASSWORD: root
     hostname: pgadmin
     depends_on:
       - skeletondb
-    restart: always
 
 volumes:
   skeleton-data: {} # named volumes can be managed easier using docker-compose
