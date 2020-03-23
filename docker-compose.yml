@@ -6,7 +6,7 @@ services:
     restart: always
     container_name: skeleton-db
     env_file:
-      ./skeleton.env # configure postgres
+      - ./skeleton.env # configure postgres
 #    environment:
 #      POSTGRES_PASSWORD: skeletondb
 #      POSTGRES_USER: skeletondb
