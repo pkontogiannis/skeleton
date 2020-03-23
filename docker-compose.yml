@@ -22,7 +22,7 @@ services:
     ports:
       - 8005:80
     volumes:
-      - pgadmin:/var/lib/pgadmin
+      - skeleton-pgadmin:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: root
       PGADMIN_DEFAULT_PASSWORD: root
@@ -33,4 +33,4 @@ services:
 
 volumes:
   skeleton-data: {} # named volumes can be managed easier using docker-compose
-  pgadmin: {}
+  skeleton-pgadmin: {}
