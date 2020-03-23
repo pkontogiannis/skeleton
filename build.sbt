@@ -60,7 +60,7 @@ libraryDependencies ++= {
 
     "org.typelevel" %% "cats-core" % catsVersion,
 
-    "io.swagger" %% "swagger-scala-module" % swaggerVersion
+//    "io.swagger" %% "swagger-scala-module" % swaggerVersion
   )
 }
 
