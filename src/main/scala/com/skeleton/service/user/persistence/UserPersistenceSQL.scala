@@ -145,14 +145,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  private def getUserQuery(userId: String): DBIO[Option[User]] = {
-    getUserOf(userId).result.headOption
-  }
-
-  private def getUserOf(userId: String): UserSelection =
-    Users.filter(_.userId === userId)
-
-  def deleteAllUsers: Future[Either[DatabaseError, Boolean]] = {
+  def deleteAllUsers(): Future[Either[DatabaseError, Boolean]] = {
     db.run(Users.delete).transformWith {
       case Success(res) => res match {
         case 0 => Future.successful(Right(false))
@@ -161,4 +154,11 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
       case Failure(_) => Future.successful(Left(GenericDatabaseError))
     }
   }
+
+  private def getUserQuery(userId: String): DBIO[Option[User]] = {
+    getUserOf(userId).result.headOption
+  }
+
+  private def getUserOf(userId: String): UserSelection =
+    Users.filter(_.userId === userId)
 }

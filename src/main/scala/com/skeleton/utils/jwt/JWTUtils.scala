@@ -30,14 +30,14 @@ object JWTUtils {
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
+  private def issueJWT(userId: String, role: String, tokenExpiration: Int) = {
+    JwtClaim(subject = Some(userId), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
+  }
+
   def getRefreshToken(userId: String, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
     val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
-  }
-
-  private def issueJWT(userId: String, role: String, tokenExpiration: Int) = {
-    JwtClaim(subject = Some(userId), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
   }
 
   def validateToken(token: String): Either[AuthenticationError, Boolean] = {
@@ -47,6 +47,14 @@ object JWTUtils {
     extractTokenBody(token) match {
       case Right(extractedToken) => tokenIsValid(extractedToken)
       case Left(_) => Left(AuthenticationError())
+    }
+  }
+
+  def tokenIsValid(token: String): Either[ServiceError.AuthenticationError, Boolean] = {
+    if (Jwt.isValid(token, secretKey, Seq(JwtAlgorithm.HS256))) {
+      Right(true)
+    } else {
+      Left(AuthenticationError())
     }
   }
 
@@ -63,6 +71,12 @@ object JWTUtils {
     }
   }
 
+  def extractTokenBody(token: String): Either[AuthenticationError, String] = token match {
+    case tok if tok.startsWith(tokenPrefix) =>
+      Right(tok.substring(7))
+    case _ => Left(AuthenticationError())
+  }
+
   def extractClaims(token: String): Option[Claims] = {
     JwtCirce.decode(token, secretKey, Seq(algorithm)).toOption.flatMap { c =>
       for {
@@ -75,19 +89,5 @@ object JWTUtils {
   }
 
   private def currentTimeSeconds: Long = System.currentTimeMillis() / 1000
-
-  def tokenIsValid(token: String): Either[ServiceError.AuthenticationError, Boolean] = {
-    if (Jwt.isValid(token, secretKey, Seq(JwtAlgorithm.HS256))) {
-      Right(true)
-    } else {
-      Left(AuthenticationError())
-    }
-  }
-
-  def extractTokenBody(token: String): Either[AuthenticationError, String] = token match {
-    case tok if tok.startsWith(tokenPrefix) =>
-      Right(tok.substring(7))
-    case _ => Left(AuthenticationError())
-  }
 
 }
