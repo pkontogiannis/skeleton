@@ -40,6 +40,10 @@ object JWTUtils {
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
   }
 
+  private def issueJWT(userId: String, role: String, tokenExpiration: Int): JwtClaim = {
+    JwtClaim(subject = Some(userId), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
+  }
+
   def validateToken(token: String): Either[AuthenticationError, Boolean] = {
     // If you only want to check if a token is valid without decoding it.
     // All good
@@ -60,10 +64,10 @@ object JWTUtils {
 
   def decodeToken(token: String): Either[AuthenticationError, Claims] = {
     val extractedToken: Either[AuthenticationError, String] = extractTokenBody(token)
-    Jwt.decode(extractedToken.right.get, secretKey, acceptedAlgorithms) match {
+    Jwt.decodeRaw(extractedToken.right.get, secretKey, acceptedAlgorithms) match {
       case Failure(_) => Left(AuthenticationError())
       case Success(jwtClaim) =>
-        Claims(JwtCirce.parseClaim(jwtClaim.toString)) match {
+        Claims(JwtCirce.parseClaim(jwtClaim)) match {
           case Left(error) => Left(error)
           case Right(claims) =>
             Right(claims)
