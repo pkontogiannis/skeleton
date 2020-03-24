@@ -21,9 +21,6 @@ lazy val circeExtra = "1.31.0"
 lazy val h2Version = "1.4.200"
 lazy val catsVersion = "2.1.1"
 lazy val scalaCheck = "1.14.3"
-lazy val neoTypesVersion = "0.7.0"
-lazy val neo4jVersion = "4.0.1"
-lazy val neo4jDriverVersion = "4.0.1"
 lazy val swaggerVersion = "1.0.7-SNAPSHOT"
 lazy val postgresVersion = "42.2.11"
 
@@ -64,7 +61,7 @@ libraryDependencies ++= {
 
     "org.typelevel" %% "cats-core" % catsVersion,
 
-    //    "io.swagger" %% "swagger-scala-module" % swaggerVersion
+//    "io.swagger" %% "swagger-scala-module" % swaggerVersion
   )
 }
 

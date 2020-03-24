@@ -1,0 +1,370 @@
+swagger: '2.0'
+info:
+  title: Order Service API
+  description: Manages the lifecycle of orders, including the required interactions like reserving and releasing promo codes.
+  version: "1.0.0"
+basePath: /order-service/v01
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: EP access token
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: Api-Key
+    description: Order service secret api key
+produces:
+  - application/json
+
+paths:
+
+  /orders:
+    post:
+      summary: Create an order from an offer id.
+      operationId: createOrder
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Order Management Public
+      parameters:
+        - name: offerId
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateOrderRequest'
+      responses:
+        "201":
+          description: Order created.
+          schema:
+            $ref: '#/definitions/OrderPublic'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      summary: List all orders for user.
+      operationId: listOrders
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Order Management Public
+      responses:
+        "200":
+          description: Order object.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderPublic'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /orders/{orderId}:
+    get:
+      summary: Get an order by order id and authorized per creator.
+      operationId: getOrder
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Order Management Public
+      parameters:
+        - name: orderId
+          in: path
+          description: UUID of the desired order
+          required: true
+          type: string
+          format: uuid
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      responses:
+        "200":
+          description: Order object.
+          schema:
+            $ref: '#/definitions/OrderPublic'
+        "401":
+          description: Unauthorized get, only users who created an order may manage them.
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      summary: Get an order by order id and authorized per creator.
+      operationId: cancelOrder
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Order Management Public
+      parameters:
+        - name: orderId
+          in: path
+          description: UUID of the desired order
+          required: true
+          type: string
+          format: uuid
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      responses:
+        "204":
+          description: Order canceled.
+        "401":
+          description: Unauthorized cancel, only users who created an order may manage them.
+          schema:
+            $ref: '#/definitions/Error'
+        "400":
+          description: Orders can only be cancelled when in status ORDER_CREATED.
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /ms/orders/{orderId}:
+    get:
+      summary: Get an order by order id with no authorization since it is within the microservice environment.
+      operationId: getOrderInternal
+      tags:
+        - Order Magement Internal
+      parameters:
+        - name: orderId
+          in: path
+          description: UUID of the desired order
+          required: true
+          type: string
+          format: uuid
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      responses:
+        "200":
+          description: Order object.
+          schema:
+            $ref: '#/definitions/OrderInternal'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    patch:
+      summary: Update the state of an order, each request must change the status and could change some of the data.
+      operationId: updateOrderInternal
+      tags:
+        - Order Magement Internal
+      parameters:
+        - name: orderId
+          in: path
+          description: UUID of the desired order
+          required: true
+          type: string
+          format: uuid
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        - name: orderUpdate
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderUpdate'
+      responses:
+        "200":
+          description: Order object.
+          schema:
+            $ref: '#/definitions/OrderInternal'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /official-accounts/{merchantId}/orders:
+    get:
+      summary: Get a list of orders by merchant id, this endpoint is intended for the merchant web app.
+      operationId: getOrdersByMerchantId
+      tags:
+        - Merchant App
+      parameters:
+        - name: merchantId
+          in: path
+          description: id of the merchant you want to retrieve the orders from
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Order object array.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderInternal'
+        "500":
+          description: The server experiences an internal error.
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        "503":
+          description: The server is unable to handle requests due to temporary overload.
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+
+  CreateOrderRequest:
+    required:
+      - offerId
+    properties:
+      offerId:
+        $ref: '#/definitions/UUID'
+
+  OrderPublic:
+    properties:
+      orderId:
+        $ref: '#/definitions/UUID'
+      orderMetadata:
+        type: object
+      merchantId:
+        $ref: '#/definitions/UUID'
+      currency:
+        $ref: '#/definitions/Currency'
+      amount:
+        type: number
+      createdAt:
+        type: number
+      paymentMethodType:
+        $ref: '#/definitions/MethodType'
+      paymentMethodLabel:
+        $ref: '#/definitions/MethodLabel'
+      status:
+        $ref: '#/definitions/OrderStatus'
+
+  OrderInternal:
+    properties:
+      orderId:
+        $ref: '#/definitions/UUID'
+      orderMetadata:
+        type: object
+      merchantId:
+        $ref: '#/definitions/UUID'
+      currency:
+        $ref: '#/definitions/Currency'
+      amount:
+        type: number
+      createdAt:
+        type: number
+      paymentMethodType:
+        $ref: '#/definitions/MethodType'
+      paymentMethodLabel:
+        $ref: '#/definitions/MethodLabel'
+      status:
+        type: array
+        items:
+          $ref: '#/definitions/HistoricState'
+
+  OrderUpdate:
+    required: [status]
+    properties:
+      orderMetadata:
+        type: object
+      merchantId:
+        $ref: '#/definitions/UUID'
+      currency:
+        $ref: '#/definitions/Currency'
+      amount:
+        type: number
+      createdAt:
+        type: number
+      paymentMethodType:
+        $ref: '#/definitions/MethodType'
+      paymentMethodLabel:
+        $ref: '#/definitions/MethodLabel'
+      status:
+        $ref: '#/definitions/OrderStatus'
+
+  UUID:
+    type: string
+    format: uuid
+    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+    example: '5f5f7bf6-de56-405f-a373-66d1e05efb8d'
+
+  Currency:
+    type: string
+    format: currency
+    example: 'EUR'
+
+  MethodType:
+    type: string
+    enum: [CREDITCARD, PAY_PAL, UNKNOWN]
+
+  MethodLabel:
+    type: string
+    example: '**** **** **** 1234'
+
+  OrderStatus:
+    type: string
+    enum: [ORDER_CREATED, ORDER_DELIVERED, ORDER_CANCELLED, ORDER_EXPIRED, PAYMENT_FAILED, PAYMENT_ACCEPTED, PAYMENT_INCOMPLETE, PAYMENT_PENDING]
+
+  HistoricState:
+    type: object
+    properties:
+      code:
+        $ref: '#/definitions/OrderStatus'
+      message:
+        type: string
+        example: 'Order is created.'
+      timestamp:
+        type: number
+        example: 1532513688856
+
+  Error:
+    type: object
+    required: [code, message]
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+
+  InternalServerError:
+    type: object
+    required: [code, message]
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+
