@@ -31,18 +31,6 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
       }
     }
 
-    def completeEither[E <: ServiceError, R: ToEntityMarshaller]
-    (statusCode: StatusCode, either: => Either[E, R])(
-      implicit mapper: ErrorMapper[E, HttpError]
-    ): Route = {
-      either match {
-        case Right(value) =>
-          complete(statusCode, value)
-        case Left(value) =>
-          complete(value.statusCode, ErrorResponse(code = value.code, message = value.message))
-      }
-    }
-
     def routes: Route = {
       pathPrefix("api" / version)(
         authManagement
@@ -109,6 +97,18 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
             }
           }
         }
+      }
+    }
+
+    def completeEither[E <: ServiceError, R: ToEntityMarshaller]
+    (statusCode: StatusCode, either: => Either[E, R])(
+      implicit mapper: ErrorMapper[E, HttpError]
+    ): Route = {
+      either match {
+        case Right(value) =>
+          complete(statusCode, value)
+        case Left(value) =>
+          complete(value.statusCode, ErrorResponse(code = value.code, message = value.message))
       }
     }
 

@@ -1,7 +1,10 @@
+package com.skeleton
+
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import com.skeleton.service.{Dependencies, Routes}
 import com.skeleton.utils.config.Configuration
+import com.skeleton.utils.database.FlywayService
 import com.skeleton.utils.server.Server
 
 import scala.concurrent.Future
@@ -17,6 +20,8 @@ object Main extends App with Server {
     val routes: Route = Routes.buildRoutes(dependencies)
 
     val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routes, configuration.serverConfig.host, configuration.serverConfig.port)
+
+    FlywayService.migrate()
 
     serverBinding.onComplete {
       case Success(bound) =>

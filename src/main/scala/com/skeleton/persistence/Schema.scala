@@ -13,4 +13,3 @@ trait Schema extends SlickJdbcProfile
   lazy val Schema: profile.DDL =
     Users.schema
 }
-
