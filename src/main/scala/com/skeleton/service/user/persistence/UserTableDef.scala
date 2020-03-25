@@ -10,7 +10,7 @@ trait UserTableDef {
 
   import profile.api._
 
-  class UserTable(tag: Tag) extends Table[User](tag, "Users") {
+  class UserTable(tag: Tag) extends Table[User](tag, Some("skeleton"), "user") {
 
     def * : ProvenShape[User] = (
       id.?,
@@ -22,9 +22,9 @@ trait UserTableDef {
       role
     ) <> ((User.apply _).tupled, User.unapply)
 
-    def id: Rep[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id: Rep[Int] = column[Int]("user_id", O.PrimaryKey, O.AutoInc)
 
-    def userId: Rep[String] = column[String]("user_id", O.Unique)
+    def userId: Rep[String] = column[String]("user_uuid", O.Unique)
 
     def email: Rep[String] = column[String]("email", O.Unique)
 
