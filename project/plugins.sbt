@@ -1,2 +1,5 @@
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.6.1")
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
+lazy val sbtNativePackagerVersion = "1.6.1"
+lazy val sbtRevolver              = "0.9.1"
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % sbtNativePackagerVersion)
+addSbtPlugin("io.spray"         % "sbt-revolver"        % sbtRevolver)
