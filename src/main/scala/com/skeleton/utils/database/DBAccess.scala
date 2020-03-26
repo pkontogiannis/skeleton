@@ -10,7 +10,7 @@ case class DBAccess(actorSystem: ActorSystem) extends Schema {
   //  val db: Database = Database.forConfig("h2mem")
   val db: Database = Database.forConfig("database")
 
-  private val tables = List(Users)
+//  private val tables = List(Users)
 
 //  private val existing: Future[Vector[MTable]] = db.run(MTable.getTables)
 //  private val f = existing.flatMap(v => {
