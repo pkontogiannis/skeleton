@@ -22,14 +22,14 @@ class UserRoutesIT extends ServiceSuite {
 
   val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
   val user2: UserCreate = UserCreate("pkont5@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-  val expectedUser: UserDto = UserDto(UUID.randomUUID().toString, "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+  val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
 
-  val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID().toString, roles.head)
+  val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
   trait Fixture {
     val dbAccess: DBAccess = DBAccess(system)
     val userPersistence = new UserPersistenceSQL(dbAccess)
-    userPersistence.deleteAllUsers
+    userPersistence.deleteAllUsers()
     val userService = new UserServiceDefault(userPersistence)
     val userRoutes: Route = new UserRoutes(userService).userRoutes
   }

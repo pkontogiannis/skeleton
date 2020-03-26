@@ -17,13 +17,13 @@ class AuthRoutesIT extends ServiceSuite {
 
   private val roles: List[String] = config.getStringList("authentication.roles").asScala.toList
   val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-  val expectedUser: UserDto = UserDto(UUID.randomUUID().toString, "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+  val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
   val userLogin: UserLogin = UserLogin(user.email, user.password)
 
   trait Fixture {
     val dbAccess: DBAccess = DBAccess(system)
     val userPersistence = new UserPersistenceSQL(dbAccess)
-    userPersistence.deleteAllUsers
+    userPersistence.deleteAllUsers()
     val authService = new AuthServiceDefault(userPersistence)
     val authRoutes: Route = new AuthRoutes(authService).authRoutes
   }

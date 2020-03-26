@@ -9,7 +9,7 @@ trait SlickJdbcProfile {
 
   lazy val dbAccess: DBAccess = DBAccess(actorSystem)
 
-//  lazy val profile: JdbcProfile = slick.jdbc.PostgresProfile
-  lazy val profile: JdbcProfile = slick.jdbc.H2Profile
+  lazy val profile: JdbcProfile = slick.jdbc.PostgresProfile
+//  lazy val profile: JdbcProfile = slick.jdbc.H2Profile
 
 }

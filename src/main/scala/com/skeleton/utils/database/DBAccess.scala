@@ -3,6 +3,7 @@ package com.skeleton.utils.database
 import akka.actor.ActorSystem
 import com.skeleton.persistence.Schema
 import slick.jdbc.PostgresProfile.api._
+//import slick.jdbc.H2Profile.api._
 
 case class DBAccess(actorSystem: ActorSystem) extends Schema {
 

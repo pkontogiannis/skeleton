@@ -1,5 +1,7 @@
 package com.skeleton.service.user
 
+import java.util.UUID
+
 import com.skeleton.service.errors.DatabaseError
 import com.skeleton.service.user.UserModel.{UpdateUser, UserCreate, UserDto}
 
@@ -9,14 +11,14 @@ trait UserService {
 
   def getUsers: Future[Either[DatabaseError, List[UserDto]]]
 
-  def getUser(userId: String): Future[Either[DatabaseError, UserDto]]
+  def getUser(userId: UUID): Future[Either[DatabaseError, UserDto]]
 
   def createUser(userCreate: UserCreate): Future[Either[DatabaseError, UserDto]]
 
-  def updateUser(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]]
+  def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]]
 
-  def updateUserPartially(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]]
+  def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]]
 
-  def deleteUser(userId: String): Future[Either[DatabaseError, Boolean]]
+  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]]
 
 }
