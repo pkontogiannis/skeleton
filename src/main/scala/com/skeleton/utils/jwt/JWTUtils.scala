@@ -30,10 +30,6 @@ object JWTUtils {
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
-  private def issueJWT(userId: String, role: String, tokenExpiration: Int) = {
-    JwtClaim(subject = Some(userId), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
-  }
-
   def getRefreshToken(userId: String, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
     val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
