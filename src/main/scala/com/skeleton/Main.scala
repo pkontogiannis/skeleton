@@ -3,17 +3,15 @@ package com.skeleton
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import com.skeleton.service.{Dependencies, Routes}
-import com.skeleton.utils.config.Configuration
-import com.skeleton.utils.database.FlywayService
-import com.skeleton.utils.server.Server
+import com.skeleton.utils.database.Migration
+import com.skeleton.utils.server.{Config, Server}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-object Main extends App with Server {
+object Main extends App with Server with Config with Migration {
 
   def startApplication(): Unit = {
-    val configuration: Configuration = Configuration.default
 
     val dependencies: Dependencies = Dependencies.fromConfig(configuration)
 
@@ -21,7 +19,7 @@ object Main extends App with Server {
 
     val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routes, configuration.serverConfig.host, configuration.serverConfig.port)
 
-    FlywayService.migrate()
+    flywayMigrate()
 
     serverBinding.onComplete {
       case Success(bound) =>
