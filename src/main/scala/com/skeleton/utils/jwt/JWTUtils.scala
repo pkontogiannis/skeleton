@@ -24,20 +24,20 @@ object JWTUtils {
 
   implicit val clock: Clock = Clock.systemUTC
 
-  def getAccessToken(userId: String, role: String): Token = {
+  def getAccessToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, accessTokenExpiration)
     val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
-  def getRefreshToken(userId: String, role: String): Token = {
+  def getRefreshToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
     val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
   }
 
-  private def issueJWT(userId: String, role: String, tokenExpiration: Int): JwtClaim = {
-    JwtClaim(subject = Some(userId), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
+  private def issueJWT(userId: UUID, role: String, tokenExpiration: Int): JwtClaim = {
+    JwtClaim(subject = Some(userId.toString), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
   }
 
   def validateToken(token: String): Either[AuthenticationError, Boolean] = {
