@@ -82,10 +82,10 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   }
 
   def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
-    val updatedUser = UserModel.updateUserToUser(userId, updateUser)
+    val updatedUser: User = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
-      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser))
+      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
       us <- getUserOf(userId).result.headOption
     } yield us
@@ -122,7 +122,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     val updatedUser = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
-      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser))
+      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
       us <- getUserOf(userId).result.head
     } yield us
