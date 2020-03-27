@@ -1,5 +1,7 @@
 package com.skeleton.service.auth
 
+import java.util.UUID
+
 import akka.http.scaladsl.marshalling.ToEntityMarshaller
 import akka.http.scaladsl.model.{StatusCode, StatusCodes}
 import akka.http.scaladsl.server.Route
@@ -89,7 +91,7 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
       path("access") {
         pathEndOrSingleSlash {
           get {
-            onComplete(authService.getAccessToken(claims("userId"), claims("role"))) {
+            onComplete(authService.getAccessToken(UUID.fromString(claims("userId")), claims("role"))) {
               case Success(future) =>
                 completeEither(StatusCodes.OK, future)
               case Failure(ex) =>
@@ -116,7 +118,7 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
       path("refresh") {
         pathEndOrSingleSlash {
           get {
-            onComplete(authService.getRefreshToken(claims("userId"), claims("role"))) {
+            onComplete(authService.getRefreshToken(UUID.fromString(claims("userId")), claims("role"))) {
               case Success(future) =>
                 completeEither(StatusCodes.OK, future)
               case Failure(ex) =>

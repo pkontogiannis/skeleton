@@ -1,13 +1,14 @@
 package com.skeleton.utils.config
 
-import com.skeleton.utils.server.ServerConfig
+import com.skeleton.utils.server.{DatabaseConfig, ServerConfig}
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration.{FiniteDuration, MILLISECONDS}
 
 case class Configuration(
                           initializationTimeoutConfiguration: FiniteDuration,
-                          serverConfig: ServerConfig
+                          serverConfig: ServerConfig,
+                          databaseConfig: DatabaseConfig
                         )
 
 object Configuration extends ConfigurationFunctions {
@@ -23,7 +24,8 @@ trait ConfigurationFunctions {
 
     new Configuration(
       FiniteDuration.apply(config.getDuration("server.initialization-timeout").toMillis, MILLISECONDS),
-      ServerConfig(config)
+      ServerConfig(config),
+      DatabaseConfig(config)
     )
   }
 }

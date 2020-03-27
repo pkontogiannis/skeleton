@@ -37,7 +37,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   }
 
   def storeUser(data: UserCreate): Future[Either[DatabaseError, User]] = {
-    val userRow = User(userId = UUID.randomUUID().toString,
+    val userRow = User(userId = UUID.randomUUID(),
       email = data.email,
       password = data.password,
       firstName = data.firstName, lastName = data.lastName, role = data.role)
@@ -57,7 +57,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     Users.filter(_.email === email).exists.result
   }
 
-  def getUser(userId: String): Future[Either[DatabaseError, User]] = {
+  def getUser(userId: UUID): Future[Either[DatabaseError, User]] = {
     db.run(Users.filter(_.userId === userId).result.headOption).
       transformWith {
         case Success(optUser) => optUser match {
@@ -81,11 +81,11 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
       }
   }
 
-  def updateUser(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
-    val updatedUser = UserModel.updateUserToUser(userId, updateUser)
+  def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
+    val updatedUser: User = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
-      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser))
+      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
       us <- getUserOf(userId).result.headOption
     } yield us
@@ -99,7 +99,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  def updateUserPartially(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
+  def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
       updateActionOption = userOpt.map(oldUser => {
@@ -118,18 +118,18 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  def editUser(userId: String, updateUser: UpdateUser): Future[User] = {
+  def editUser(userId: UUID, updateUser: UpdateUser): Future[User] = {
     val updatedUser = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
-      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser))
+      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
       us <- getUserOf(userId).result.head
     } yield us
     db.run(actions.transactionally)
   }
 
-  def deleteUser(userId: String): Future[Either[DatabaseError, Boolean]] = {
+  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] = {
     db.run(getUserOf(userId).delete).map {
       case 0 => false
       case 1 => true
@@ -155,10 +155,10 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  private def getUserQuery(userId: String): DBIO[Option[User]] = {
+  private def getUserQuery(userId: UUID): DBIO[Option[User]] = {
     getUserOf(userId).result.headOption
   }
 
-  private def getUserOf(userId: String): UserSelection =
+  private def getUserOf(userId: UUID): UserSelection =
     Users.filter(_.userId === userId)
 }
