@@ -6,9 +6,9 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server._
 import com.skeleton.service.errors.ErrorResponse
-import com.skeleton.service.user.UserModel.{Token, UpdateUser, UserCreate, UserDto}
+import com.skeleton.service.user.UserModel.{ Token, UpdateUser, UserCreate, UserDto }
 import com.skeleton.service.user.persistence.UserPersistenceSQL
-import com.skeleton.service.user.{UserRoutes, UserServiceDefault}
+import com.skeleton.service.user.{ UserRoutes, UserServiceDefault }
 import com.skeleton.utils.database.DBAccess
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
@@ -22,17 +22,31 @@ class UserRoutesIT extends ServiceSuite {
 
   trait Fixture {
     val dbAccess: DBAccess = DBAccess(system)
-    val userPersistence = new UserPersistenceSQL(dbAccess)
+    val userPersistence    = new UserPersistenceSQL(dbAccess)
     userPersistence.deleteAllUsers()
-    val userService = new UserServiceDefault(userPersistence)
+    val userService       = new UserServiceDefault(userPersistence)
     val userRoutes: Route = new UserRoutes(userService).userRoutes
   }
 
   "User routes" should {
 
     "successfully creates a user" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
+      val expectedUser: UserDto =
+        UserDto(
+          UUID.randomUUID(),
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
@@ -46,8 +60,22 @@ class UserRoutesIT extends ServiceSuite {
     }
 
     "successfully handles a user with an existent email" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
+      val expectedUser: UserDto =
+        UserDto(
+          UUID.randomUUID(),
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
@@ -61,21 +89,36 @@ class UserRoutesIT extends ServiceSuite {
         val errorResponse: ErrorResponse = responseAs[ErrorResponse]
         assert(
           errorResponse.code === "RecordAlreadyExists" &&
-            errorResponse.message === "This email already exists"
+          errorResponse.message === "This email already exists"
         )
       }
     }
 
     "successfully serves a user" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
+      val expectedUser: UserDto =
+        UserDto(
+          UUID.randomUUID(),
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
-      val resultUser: UserDto = Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.Created)
-        responseAs[UserDto]
-      }
+      val resultUser: UserDto =
+        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Created)
+          responseAs[UserDto]
+        }
       Get("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
         status should ===(StatusCodes.OK)
@@ -87,9 +130,30 @@ class UserRoutesIT extends ServiceSuite {
     }
 
     "successfully serves a list of users" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-      val user2: UserCreate = UserCreate("pkont5@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
+      val user2: UserCreate =
+        UserCreate(
+          "pkont5@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
+      val expectedUser: UserDto =
+        UserDto(
+          UUID.randomUUID(),
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
@@ -117,24 +181,37 @@ class UserRoutesIT extends ServiceSuite {
         val errorResponse: ErrorResponse = responseAs[ErrorResponse]
         assert(
           errorResponse.code === "DefaultNotFoundError" &&
-            errorResponse.message === "Can't find requested asset"
+          errorResponse.message === "Can't find requested asset"
         )
       }
     }
 
     "successfully updates a user" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
       val updateUser: UpdateUser = UpdateUser(
-        None, Some("pkont4@gmail.com"), None, None, None, None
+        None,
+        Some("pkont4@gmail.com"),
+        None,
+        None,
+        None,
+        None
       )
 
-      val resultUser: UserDto = Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.Created)
-        responseAs[UserDto]
-      }
+      val resultUser: UserDto =
+        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Created)
+          responseAs[UserDto]
+        }
 
       Put("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
@@ -171,14 +248,22 @@ class UserRoutesIT extends ServiceSuite {
 //    }
 
     "successfully deletes a user" in new Fixture {
-      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
+      val user: UserCreate =
+        UserCreate(
+          "pkont4@gmail.com",
+          "Petros",
+          "Kontogiannis",
+          "password",
+          roles.head
+        )
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), roles.head)
 
-      val resultUser: UserDto = Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.Created)
-        responseAs[UserDto]
-      }
+      val resultUser: UserDto =
+        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Created)
+          responseAs[UserDto]
+        }
 
       Delete("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true

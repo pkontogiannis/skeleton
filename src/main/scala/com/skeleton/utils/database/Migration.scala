@@ -7,8 +7,13 @@ import org.flywaydb.core.internal.jdbc.DriverDataSource
 
 trait Migration extends Config {
 
-  val dataSource = new DriverDataSource(Thread.currentThread.getContextClassLoader, dbConfig.driver,
-    dbConfig.url, dbConfig.username, dbConfig.password)
+  val dataSource = new DriverDataSource(
+    Thread.currentThread.getContextClassLoader,
+    dbConfig.driver,
+    dbConfig.url,
+    dbConfig.username,
+    dbConfig.password
+  )
 
   val flywayConfig: FluentConfiguration = Flyway
     .configure()
@@ -17,9 +22,8 @@ trait Migration extends Config {
 
   val flyway: Flyway = new Flyway(flywayConfig)
 
-  def flywayMigrate(): Int = {
+  def flywayMigrate(): Int =
     flyway.migrate()
-  }
 
   def reloadSchema(): Int = {
     flyway.clean()

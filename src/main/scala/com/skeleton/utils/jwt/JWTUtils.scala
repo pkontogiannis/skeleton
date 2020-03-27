@@ -6,41 +6,41 @@ import java.util.UUID
 import com.skeleton.service.errors.ServiceError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel.Token
-import com.typesafe.config.{Config, ConfigFactory}
-import pdi.jwt.{Jwt, JwtAlgorithm, JwtCirce, JwtClaim}
+import com.typesafe.config.{ Config, ConfigFactory }
+import pdi.jwt.{ Jwt, JwtAlgorithm, JwtCirce, JwtClaim }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object JWTUtils {
 
   val config: Config = ConfigFactory.load()
 
-  private val tokenPrefix = config.getString("authentication.token.prefix")
-  private val secretKey = config.getString("authentication.token.secret")
-  private val algorithm = JwtAlgorithm.HS256
-  private val acceptedAlgorithms = Seq(algorithm)
-  private val accessTokenExpiration = config.getInt("authentication.token.access")
+  private val tokenPrefix            = config.getString("authentication.token.prefix")
+  private val secretKey              = config.getString("authentication.token.secret")
+  private val algorithm              = JwtAlgorithm.HS256
+  private val acceptedAlgorithms     = Seq(algorithm)
+  private val accessTokenExpiration  = config.getInt("authentication.token.access")
   private val refreshTokenExpiration = config.getInt("authentication.token.refresh")
 
   implicit val clock: Clock = Clock.systemUTC
 
   def getAccessToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, accessTokenExpiration)
-    val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
   def getRefreshToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
-    val jwtToken = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
   }
 
-  private def issueJWT(userId: UUID, role: String, tokenExpiration: Int): JwtClaim = {
-    JwtClaim(subject = Some(userId.toString), issuer = Some(role)).issuedNow.expiresIn(tokenExpiration)
-  }
+  private def issueJWT(userId: UUID, role: String, tokenExpiration: Int): JwtClaim =
+    JwtClaim(subject = Some(userId.toString), issuer = Some(role)).issuedNow
+      .expiresIn(tokenExpiration)
 
-  def validateToken(token: String): Either[AuthenticationError, Boolean] = {
+  def validateToken(token: String): Either[AuthenticationError, Boolean] =
     // If you only want to check if a token is valid without decoding it.
     // All good
     //    Jwt.validate(accessToken, secretKey, Seq(JwtAlgorithm.HS256))
@@ -48,19 +48,21 @@ object JWTUtils {
       case Right(extractedToken) => tokenIsValid(extractedToken)
       case Left(_) => Left(AuthenticationError())
     }
-  }
 
-  def tokenIsValid(token: String): Either[ServiceError.AuthenticationError, Boolean] = {
+  def tokenIsValid(token: String): Either[ServiceError.AuthenticationError, Boolean] =
     if (Jwt.isValid(token, secretKey, Seq(JwtAlgorithm.HS256))) {
       Right(true)
     } else {
       Left(AuthenticationError())
     }
-  }
 
   def decodeToken(token: String): Either[AuthenticationError, Claims] = {
     val extractedToken: Either[AuthenticationError, String] = extractTokenBody(token)
-    Jwt.decodeRaw(extractedToken.right.get, secretKey, acceptedAlgorithms) match {
+    Jwt.decodeRaw(
+      extractedToken.right.get,
+      secretKey,
+      acceptedAlgorithms
+    ) match {
       case Failure(_) => Left(AuthenticationError())
       case Success(jwtClaim) =>
         Claims(JwtCirce.parseClaim(jwtClaim)) match {
@@ -77,7 +79,7 @@ object JWTUtils {
     case _ => Left(AuthenticationError())
   }
 
-  def extractClaims(token: String): Option[Claims] = {
+  def extractClaims(token: String): Option[Claims] =
     JwtCirce.decode(token, secretKey, Seq(algorithm)).toOption.flatMap { c =>
       for {
         userId <- c.subject.flatMap(s => Try(UUID.fromString(s.toString)).toOption)
@@ -86,7 +88,6 @@ object JWTUtils {
         role <- c.issuer
       } yield Claims(userId, issuedAt, expiration, role)
     }
-  }
 
   private def currentTimeSeconds: Long = System.currentTimeMillis() / 1000
 

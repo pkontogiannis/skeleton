@@ -3,16 +3,16 @@ package com.skeleton.service.auth
 import java.util.UUID
 
 import akka.http.scaladsl.marshalling.ToEntityMarshaller
-import akka.http.scaladsl.model.{StatusCode, StatusCodes}
+import akka.http.scaladsl.model.{ StatusCode, StatusCodes }
 import akka.http.scaladsl.server.Route
-import com.skeleton.service.errors.{ErrorMapper, ErrorResponse, HttpError, ServiceError}
-import com.skeleton.service.user.UserModel.{UserCreate, UserLogin}
-import com.skeleton.service.{Routes, SecuredRoutes}
+import com.skeleton.service.errors.{ ErrorMapper, ErrorResponse, HttpError, ServiceError }
+import com.skeleton.service.user.UserModel.{ UserCreate, UserLogin }
+import com.skeleton.service.{ Routes, SecuredRoutes }
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes {
 
@@ -33,36 +33,33 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
       }
     }
 
-    def routes: Route = {
+    def routes: Route =
       pathPrefix("api" / version)(
         authManagement
       )
-    }
 
     def authManagement: Route =
       pathPrefix("auth") {
         register ~ login ~ tokenManagement
       }
 
-    def register: Route = {
+    def register: Route =
       path("register") {
         pathEndOrSingleSlash {
           post {
-            entity(as[UserCreate]) {
-              userRegister =>
-                onComplete(authService.registerUser(userRegister)) {
-                  case Success(future) =>
-                    completeEither(StatusCodes.Created, future)
-                  case Failure(ex) =>
-                    complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
-                }
+            entity(as[UserCreate]) { userRegister =>
+              onComplete(authService.registerUser(userRegister)) {
+                case Success(future) =>
+                  completeEither(StatusCodes.Created, future)
+                case Failure(ex) =>
+                  complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
+              }
             }
           }
         }
       }
-    }
 
-    def login: Route = {
+    def login: Route =
       path("login") {
         pathEndOrSingleSlash {
           post {
@@ -77,17 +74,19 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
           }
         }
       }
-    }
 
     def tokenManagement: Route =
       pathPrefix("token") {
         authorized(authorizationList) { clms =>
-          val claims = Map("userId" -> clms("userId").toString, "role" -> clms("role").toString)
+          val claims = Map(
+            "userId" -> clms("userId").toString,
+            "role" -> clms("role").toString
+          )
           getAccessToken(claims) ~ getRefreshToken(claims)
         }
       }
 
-    def getAccessToken(claims: Map[String, String]): Route = {
+    def getAccessToken(claims: Map[String, String]): Route =
       path("access") {
         pathEndOrSingleSlash {
           get {
@@ -100,21 +99,8 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
           }
         }
       }
-    }
 
-    def completeEither[E <: ServiceError, R: ToEntityMarshaller]
-    (statusCode: StatusCode, either: => Either[E, R])(
-      implicit mapper: ErrorMapper[E, HttpError]
-    ): Route = {
-      either match {
-        case Right(value) =>
-          complete(statusCode, value)
-        case Left(value) =>
-          complete(value.statusCode, ErrorResponse(code = value.code, message = value.message))
-      }
-    }
-
-    def getRefreshToken(claims: Map[String, String]): Route = {
+    def getRefreshToken(claims: Map[String, String]): Route =
       path("refresh") {
         pathEndOrSingleSlash {
           get {
@@ -127,7 +113,19 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
           }
         }
       }
-    }
+
+    def completeEither[E <: ServiceError, R: ToEntityMarshaller](statusCode: StatusCode, either: => Either[E, R])(
+        implicit mapper: ErrorMapper[E, HttpError]
+    ): Route =
+      either match {
+        case Right(value) =>
+          complete(statusCode, value)
+        case Left(value) =>
+          complete(
+            value.statusCode,
+            ErrorResponse(code = value.code, message = value.message)
+          )
+      }
 
   }
 

@@ -8,7 +8,6 @@ import com.skeleton.service.user.UserModel.{Token, UserCreate, UserDto, UserLogi
 
 import scala.concurrent.Future
 
-
 trait AuthService {
 
   def loginUser(userLogin: UserLogin): Future[Either[AuthenticationError, UserLoginDto]]

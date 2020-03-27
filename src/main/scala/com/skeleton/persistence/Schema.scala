@@ -2,9 +2,7 @@ package com.skeleton.persistence
 
 import com.skeleton.service.user.persistence.UserTableDef
 
-
-trait Schema extends SlickJdbcProfile
-  with UserTableDef {
+trait Schema extends SlickJdbcProfile with UserTableDef {
 
   import profile.api._
 
