@@ -17,6 +17,23 @@ services:
       timeout: 5s
       retries: 5
 
+
+  skeletontestdb:
+    image: postgres:12.2 # use 12.2 official postgres version
+    restart: always
+    container_name: skeleton_test_db
+    env_file:
+      - ./skeleton.env # configure postgres
+    ports:
+      - "5436:5432"
+#    volumes:
+#      - skeleton-test-data:/var/lib/skeleton_db/data # persist data even if container shuts down
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skeletondb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   skeletonpgadmin:
     image: dpage/pgadmin4:4.19
     container_name: skeleton_pgadmin
@@ -34,4 +51,5 @@ services:
 
 volumes:
   skeleton-data: {} # named volumes can be managed easier using docker-compose
+#  skeleton-test-data: {}
   skeleton-pgadmin: {}

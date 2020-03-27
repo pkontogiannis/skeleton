@@ -8,7 +8,7 @@ object UserModel {
 
   def updateUserToUser(userId: UUID, updateUser: UpdateUser): User =
     User(
-      userId = updateUser.userId.getOrElse(userId),
+      userId = userId,
       email = updateUser.email.getOrElse(""),
       password = updateUser.password.getOrElse(""),
       firstName = updateUser.firstName.getOrElse(""),

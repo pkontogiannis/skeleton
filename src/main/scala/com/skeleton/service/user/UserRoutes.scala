@@ -104,7 +104,7 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
     def patchUser(userId: UUID): Route =
       patch {
         entity(as[UpdateUser]) { updateUser =>
-          onComplete(userService.updateUser(userId, updateUser)) {
+          onComplete(userService.updateUserPartially(userId, updateUser)) {
             case Success(future) => completeEither(StatusCodes.OK, future)
             case Failure(ex) => complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
           }

@@ -26,7 +26,7 @@ trait UserTableDef {
 
     def id: Rep[Int] = column[Int]("user_id", O.PrimaryKey, O.AutoInc)
 
-    def userId: Rep[UUID] = column[UUID]("user_uuid", O.Unique)
+    def userId: Rep[UUID] = column[UUID]("user_uuid", O.Unique, O.Default(UUID.randomUUID()))
 
     def email: Rep[String] = column[String]("email", O.Unique)
 

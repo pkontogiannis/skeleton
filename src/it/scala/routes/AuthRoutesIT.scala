@@ -16,9 +16,6 @@ import scala.collection.JavaConverters._
 class AuthRoutesIT extends ServiceSuite {
 
   private val roles: List[String] = config.getStringList("authentication.roles").asScala.toList
-  val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
-  val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
-  val userLogin: UserLogin = UserLogin(user.email, user.password)
 
   trait Fixture {
     val dbAccess: DBAccess = DBAccess(system)
@@ -31,6 +28,9 @@ class AuthRoutesIT extends ServiceSuite {
   "Auth Routes" should {
 
     "successfully register a user" in new Fixture {
+      val user: UserCreate = UserCreate("pkont4@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
+      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4@gmail.com", "Petros", "Kontogiannis", roles.head)
+
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
         status should ===(StatusCodes.Created)
@@ -42,6 +42,10 @@ class AuthRoutesIT extends ServiceSuite {
     }
 
     "successfully login user" in new Fixture {
+      val user: UserCreate = UserCreate("pkont4_2@gmail.com", "Petros", "Kontogiannis", "password", roles.head)
+      val userLogin: UserLogin = UserLogin(user.email, user.password)
+      val expectedUser: UserDto = UserDto(UUID.randomUUID(), "pkont4_2@gmail.com", "Petros", "Kontogiannis", roles.head)
+
       val resultUser: UserDto = Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
         status should ===(StatusCodes.Created)

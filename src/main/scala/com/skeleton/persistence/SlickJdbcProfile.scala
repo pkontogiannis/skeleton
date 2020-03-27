@@ -11,6 +11,4 @@ trait SlickJdbcProfile {
 
   lazy val profile: JdbcProfile = slick.jdbc.PostgresProfile
 
-  //  lazy val profile: JdbcProfile = slick.jdbc.H2Profile
-
 }
