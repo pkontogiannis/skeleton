@@ -6,7 +6,7 @@ trait ErrorMapper[-FromError <: ServiceError, +ToError <: HttpError] extends (Fr
 
 object ErrorMapper {
 
-  implicit val toHttpError: ErrorMapper[AuthenticationError, UnauthorizedErrorHttp] = {
-    _: ServiceError.AuthenticationError => UnauthorizedErrorHttp()
+  implicit val toHttpError: ErrorMapper[AuthenticationError, UnauthorizedErrorHttp] = { _: ServiceError.AuthenticationError =>
+    UnauthorizedErrorHttp()
   }
 }

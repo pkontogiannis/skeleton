@@ -2,12 +2,12 @@ package com.skeleton
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
-import com.skeleton.service.{Dependencies, Routes}
+import com.skeleton.service.{ Dependencies, Routes }
 import com.skeleton.utils.database.Migration
-import com.skeleton.utils.server.{Config, Server}
+import com.skeleton.utils.server.{ Config, Server }
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 object Main extends App with Server with Config with Migration {
 
@@ -17,13 +17,20 @@ object Main extends App with Server with Config with Migration {
 
     val routes: Route = Routes.buildRoutes(dependencies)
 
-    val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routes, configuration.serverConfig.host, configuration.serverConfig.port)
+    val serverBinding: Future[Http.ServerBinding] =
+      Http().bindAndHandle(
+        routes,
+        configuration.serverConfig.host,
+        configuration.serverConfig.port
+      )
 
     flywayMigrate()
 
     serverBinding.onComplete {
       case Success(bound) =>
-        println(s"com.skeleton.utils.server.Server online at http://${bound.localAddress.getHostString}:${bound.localAddress.getPort}/")
+        println(
+          s"com.skeleton.utils.server.Server online at http://${bound.localAddress.getHostString}:${bound.localAddress.getPort}/"
+        )
       case Failure(e) =>
         Console.err.println(s"com.skeleton.utils.server.Server could not start!")
         e.printStackTrace()

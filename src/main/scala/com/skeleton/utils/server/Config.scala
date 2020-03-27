@@ -5,6 +5,6 @@ import com.skeleton.utils.config.Configuration
 trait Config {
 
   val configuration: Configuration = Configuration.default
-  val dbConfig: DatabaseConfig = configuration.databaseConfig
+  val dbConfig: DatabaseConfig     = configuration.databaseConfig
 
 }

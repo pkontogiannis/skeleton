@@ -8,9 +8,7 @@ import com.skeleton.utils.config.Configuration
 import com.skeleton.utils.database.DBAccess
 import com.typesafe.config.{Config, ConfigFactory}
 
-case class Dependencies(userService: UserService,
-                        authService: AuthService)
-
+case class Dependencies(userService: UserService, authService: AuthService)
 
 object Dependencies {
   private val config: Config = ConfigFactory.load()

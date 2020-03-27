@@ -3,7 +3,7 @@ package com.skeleton.service.user
 import java.util.UUID
 
 import com.skeleton.service.errors.DatabaseError
-import com.skeleton.service.user.UserModel.{UpdateUser, UserCreate, UserDto}
+import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
 
 import scala.concurrent.Future
 

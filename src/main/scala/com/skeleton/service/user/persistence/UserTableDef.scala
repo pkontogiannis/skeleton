@@ -6,7 +6,6 @@ import com.skeleton.persistence.SlickJdbcProfile
 import com.skeleton.service.user.UserModel.User
 import slick.lifted.ProvenShape
 
-
 trait UserTableDef {
   self: SlickJdbcProfile =>
 
@@ -14,15 +13,16 @@ trait UserTableDef {
 
   class UserTable(tag: Tag) extends Table[User](tag, Some("skeleton"), "user") {
 
-    def * : ProvenShape[User] = (
-      id.?,
-      userId,
-      email,
-      password,
-      firstName,
-      lastName,
-      role
-    ) <> ((User.apply _).tupled, User.unapply)
+    def * : ProvenShape[User] =
+      (
+        id.?,
+        userId,
+        email,
+        password,
+        firstName,
+        lastName,
+        role
+      ) <> ((User.apply _).tupled, User.unapply)
 
     def id: Rep[Int] = column[Int]("user_id", O.PrimaryKey, O.AutoInc)
 

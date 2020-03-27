@@ -26,8 +26,8 @@ services:
       - ./skeleton.env # configure postgres
     ports:
       - "5436:5432"
-#    volumes:
-#      - skeleton-test-data:/var/lib/skeleton_db/data # persist data even if container shuts down
+    #    volumes:
+    #      - skeleton-test-data:/var/lib/skeleton_db/data # persist data even if container shuts down
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U skeletondb"]
       interval: 10s
@@ -51,5 +51,5 @@ services:
 
 volumes:
   skeleton-data: {} # named volumes can be managed easier using docker-compose
-#  skeleton-test-data: {}
+  #  skeleton-test-data: {}
   skeleton-pgadmin: {}
