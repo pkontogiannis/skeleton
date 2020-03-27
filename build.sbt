@@ -1,4 +1,3 @@
-
 name := "Skeleton"
 
 version := "0.1"
@@ -23,48 +22,40 @@ lazy val catsVersion = "2.1.1"
 lazy val scalaCheck = "1.14.3"
 lazy val swaggerVersion = "1.0.7-SNAPSHOT"
 lazy val postgresVersion = "42.2.11"
+lazy val logbackClassicVersion = "1.2.3"
 
 libraryDependencies ++= {
   Seq(
     "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-
     "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "it,test",
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "it,test",
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % "it,test",
-
     // Scala Test
     "org.scalatest" %% "scalatest" % scalaTestVersion % "it,test",
     "org.scalacheck" %% "scalacheck" % scalaCheck,
-
     // JSON Serialization Library
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
     "de.heikoseeberger" %% "akka-http-circe" % circeExtra,
-
     // Migration of SQL Databases
     "org.flywaydb" % "flyway-core" % flywayVersion,
-
     // ORM
     "com.typesafe.slick" %% "slick" % slickVersion,
     "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
     "org.postgresql" % "postgresql" % postgresVersion,
-
     "com.h2database" % "h2" % h2Version % Test,
-
     // Logging dependencies
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
-
     "com.pauldijou" %% "jwt-core" % jwtVersion,
     "com.pauldijou" %% "jwt-circe" % jwtVersion,
-
     "org.typelevel" %% "cats-core" % catsVersion,
+    "ch.qos.logback" % "logback-classic" % logbackClassicVersion
 
 //    "io.swagger" %% "swagger-scala-module" % swaggerVersion
   )
 }
-
 
 lazy val root = (project in file("."))
   .configs(IntegrationTest)
@@ -74,8 +65,7 @@ lazy val root = (project in file("."))
     parallelExecution in ThisBuild := false
   )
 
-
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
-mainClass in(Compile, run) := Some("com.skeleton.Main")
+mainClass in (Compile, run) := Some("com.skeleton.Main")
