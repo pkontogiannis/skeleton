@@ -50,19 +50,6 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
         }
       )
 
-    def completeEither[E <: ServiceError, R: ToEntityMarshaller](statusCode: StatusCode, either: => Either[E, R])(
-        implicit mapper: ErrorMapper[E, HttpError]
-    ): Route =
-      either match {
-        case Right(value) =>
-          complete(statusCode, value)
-        case Left(value) =>
-          complete(
-            value.statusCode,
-            ErrorResponse(code = value.code, message = value.message)
-          )
-      }
-
     def postUser: Route =
       post {
         entity(as[UserCreate]) { userCreate =>
@@ -119,6 +106,19 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
           case Failure(ex) =>
             complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
         }
+      }
+
+    def completeEither[E <: ServiceError, R: ToEntityMarshaller](statusCode: StatusCode, either: => Either[E, R])(
+        implicit mapper: ErrorMapper[E, HttpError]
+    ): Route =
+      either match {
+        case Right(value) =>
+          complete(statusCode, value)
+        case Left(value) =>
+          complete(
+            value.statusCode,
+            ErrorResponse(code = value.code, message = value.message)
+          )
       }
   }
 
