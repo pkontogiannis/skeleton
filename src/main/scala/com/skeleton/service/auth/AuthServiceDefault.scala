@@ -1,5 +1,7 @@
 package com.skeleton.service.auth
 
+import java.util.UUID
+
 import com.skeleton.service.errors.DatabaseError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel
@@ -37,12 +39,12 @@ class AuthServiceDefault(val userPersistence: UserPersistence)
     }
   }
 
-  def getAccessToken(userId: String, role: String): Future[Either[AuthenticationError, Token]] =
+  def getAccessToken(userId: UUID, role: String): Future[Either[AuthenticationError, Token]] =
     Future(Right(
       JWTUtils.getAccessToken(userId, role)
     ))
 
-  def getRefreshToken(userId: String, role: String): Future[Either[AuthenticationError, Token]] =
+  def getRefreshToken(userId: UUID, role: String): Future[Either[AuthenticationError, Token]] =
     Future(Right(
       JWTUtils.getRefreshToken(userId, role)
     ))

@@ -1,12 +1,14 @@
 package com.skeleton.service.user
 
+import java.util.UUID
+
 import scala.language.implicitConversions
 
 object UserModel {
 
-  def updateUserToUser(userId: String, updateUser: UpdateUser): User =
+  def updateUserToUser(userId: UUID, updateUser: UpdateUser): User =
     User(
-      userId = updateUser.userId.getOrElse(userId),
+      userId = userId,
       email = updateUser.email.getOrElse(""),
       password = updateUser.password.getOrElse(""),
       firstName = updateUser.firstName.getOrElse(""),
@@ -24,14 +26,14 @@ object UserModel {
     )
 
   case class User(id: Option[Int] = None,
-                  userId: String,
+                  userId: UUID,
                   email: String,
                   password: String,
                   firstName: String,
                   lastName: String,
                   role: String)
 
-  case class UserDto(userId: String,
+  case class UserDto(userId: UUID,
                      email: String,
                      firstName: String,
                      lastName: String,
@@ -45,7 +47,7 @@ object UserModel {
                        )
 
   case class UpdateUser(
-                         userId: Option[String],
+                         userId: Option[UUID],
                          password: Option[String],
                          email: Option[String],
                          firstName: Option[String],

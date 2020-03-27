@@ -79,11 +79,11 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
 
     def userActions: Route =
       pathPrefix(Segment) { id =>
-        val userId = UUID.fromString(id).toString
+        val userId: UUID = UUID.fromString(id)
         getUser(userId) ~ putUser(userId) ~ deleteUser(userId) ~ patchUser(userId)
       }
 
-    def getUser(userId: String): Route =
+    def getUser(userId: UUID): Route =
       get(
         onComplete(userService.getUser(userId)) {
           case Success(future) => completeEither(StatusCodes.OK, future)
@@ -91,7 +91,7 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
         }
       )
 
-    def putUser(userId: String): Route =
+    def putUser(userId: UUID): Route =
       put {
         entity(as[UpdateUser]) { updateUser =>
           onComplete(userService.updateUser(userId, updateUser)) {
@@ -101,17 +101,17 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
         }
       }
 
-    def patchUser(userId: String): Route =
+    def patchUser(userId: UUID): Route =
       patch {
         entity(as[UpdateUser]) { updateUser =>
-          onComplete(userService.updateUser(userId, updateUser)) {
+          onComplete(userService.updateUserPartially(userId, updateUser)) {
             case Success(future) => completeEither(StatusCodes.OK, future)
             case Failure(ex) => complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
           }
         }
       }
 
-    def deleteUser(userId: String): Route =
+    def deleteUser(userId: UUID): Route =
       delete {
         onComplete(userService.deleteUser(userId)) {
           case Success(future) => completeEither(StatusCodes.NoContent, future)

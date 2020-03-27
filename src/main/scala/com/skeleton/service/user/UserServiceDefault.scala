@@ -1,5 +1,7 @@
 package com.skeleton.service.user
 
+import java.util.UUID
+
 import com.skeleton.service.errors.DatabaseError
 import com.skeleton.service.errors.ServiceError.GenericDatabaseError
 import com.skeleton.service.user.UserModel.{UpdateUser, UserCreate, UserDto}
@@ -22,7 +24,7 @@ class UserServiceDefault(val userPersistence: UserPersistence)
       case Left(_) => Left(GenericDatabaseError)
     }
 
-  def getUser(userId: String): Future[Either[DatabaseError, UserDto]] = {
+  def getUser(userId: UUID): Future[Either[DatabaseError, UserDto]] = {
     userPersistence.getUser(userId).map {
       case Right(value) =>
         info(s"[UserService] successfully retrieve a user with uuid: ${value.userId}")
@@ -41,7 +43,7 @@ class UserServiceDefault(val userPersistence: UserPersistence)
     }
   }
 
-  def updateUser(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] = {
+  def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] = {
     userPersistence.updateUser(userId, updateUser).map {
       case Right(value) =>
         info(s"[UserService] successfully update a user with uuid: ${value.userId}")
@@ -50,7 +52,7 @@ class UserServiceDefault(val userPersistence: UserPersistence)
     }
   }
 
-  def updateUserPartially(userId: String, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] =
+  def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] =
     userPersistence.updateUserPartially(userId, updateUser).map {
       case Right(value) =>
         info(s"[UserService] successfully partially update a user with uuid: ${value.userId}")
@@ -58,7 +60,7 @@ class UserServiceDefault(val userPersistence: UserPersistence)
       case Left(error) => Left(error)
     }
 
-  def deleteUser(userId: String): Future[Either[DatabaseError, Boolean]] =
+  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] =
     userPersistence.deleteUser(userId).map {
       case Right(value) =>
         info(s"[UserService] successfully delete a user with uuid: $userId")
