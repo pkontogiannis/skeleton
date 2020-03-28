@@ -69,3 +69,27 @@ enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
 mainClass in (Compile, run) := Some("com.skeleton.Main")
+
+// *****************************************************************************
+// Aliases
+// *****************************************************************************
+
+// SBT aliases to run multiple commands in a single call
+//   Optionally add it:scalastyle if the project has integration tests
+addCommandAlias(
+  "styleCheck",
+  "; scalafmtCheck ; scalastyle ; it:scalastyle"
+)
+
+// Run tests with coverage, optionally add 'it:test' if the project has
+// integration tests
+addCommandAlias(
+  "testCoverage",
+  "; coverage ; it:test ; coverageReport"
+)
+
+// Alias to run all SBT commands that are connected with quality assurance
+addCommandAlias(
+  "qa",
+  "; styleCheck ; dependencyUpdates ; testCoverage"
+)
