@@ -17,7 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-
   skeletontestdb:
     image: postgres:12.2 # use 12.2 official postgres version
     restart: always
@@ -42,9 +41,12 @@ services:
       - 8005:80
     volumes:
       - skeleton-pgadmin:/var/lib/skeleton_pgadmin
+      - ./servers.json:/pgadmin4/servers.json
     environment:
       PGADMIN_DEFAULT_EMAIL: root
       PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     hostname: pgadmin
     depends_on:
       - skeletondb

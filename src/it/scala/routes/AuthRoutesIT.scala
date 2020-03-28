@@ -7,7 +7,6 @@ import akka.http.scaladsl.server._
 import com.skeleton.service.auth.{ AuthRoutes, AuthServiceDefault }
 import com.skeleton.service.user.UserModel.{ UserCreate, UserDto, UserLogin, UserLoginDto }
 import com.skeleton.service.user.persistence.UserPersistenceSQL
-import com.skeleton.utils.database.DBAccess
 import io.circe.generic.auto._
 import routes.helpers.ServiceSuite
 
@@ -18,8 +17,7 @@ class AuthRoutesIT extends ServiceSuite {
   private val roles: List[String] = config.getStringList("authentication.roles").asScala.toList
 
   trait Fixture {
-    val dbAccess: DBAccess = DBAccess(system)
-    val userPersistence    = new UserPersistenceSQL(dbAccess)
+    val userPersistence = new UserPersistenceSQL(dbAccess)
     userPersistence.deleteAllUsers()
     val authService       = new AuthServiceDefault(userPersistence)
     val authRoutes: Route = new AuthRoutes(authService).authRoutes

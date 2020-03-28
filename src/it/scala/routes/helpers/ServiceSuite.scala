@@ -10,6 +10,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.util.matching.Regex
 
 abstract class ServiceSuite
@@ -34,8 +36,8 @@ abstract class ServiceSuite
     flywayMigrate()
 
   override def afterAll(): Unit = {
-//    driver.close()
-//    Await.result(actorSystem.terminate(), 10.seconds)
+    dbAccess.db.close()
+    Await.result(actorSystem.terminate(), 10.seconds)
   }
 
   private def unsafeExtractHostPort(string: String): (String, Int) = {
