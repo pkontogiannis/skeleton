@@ -2,6 +2,7 @@ package com.skeleton
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.skeleton.service.{ Dependencies, Routes }
 import com.skeleton.utils.database.Migration
 import com.skeleton.utils.server.{ Config, Server }
@@ -15,7 +16,7 @@ object Main extends App with Server with Config with Migration {
 
     val dependencies: Dependencies = Dependencies.fromConfig(configuration)
 
-    val routes: Route = Routes.buildRoutes(dependencies)
+    val routes: Route = cors()(Routes.buildRoutes(dependencies))
 
     val serverBinding: Future[Http.ServerBinding] =
       Http().bindAndHandle(

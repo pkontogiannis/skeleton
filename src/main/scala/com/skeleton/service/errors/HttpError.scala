@@ -44,6 +44,11 @@ case object DefaultNotFoundErrorHttp extends HttpError {
   override val message                = "Can't find requested asset"
 }
 
+case class MethodNotAllowedErrorHttp(message: String) extends HttpError {
+  override val statusCode: StatusCode = MethodNotAllowed
+  override val code                   = "MethodNotAllowedErrorHttp"
+}
+
 case class BadRequestErrorHttp(reason: String) extends HttpError {
   override val statusCode: StatusCode = BadRequest
   override val code                   = "BadRequestError"

@@ -81,7 +81,18 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
         case Failure(_) => Future.successful(Left(GenericDatabaseError))
       }
 
-  def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
+  def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] =
+    updateUser.email match {
+      case Some(email) =>
+        exists(email).flatMap {
+          case true =>
+            Future.successful(Left(RecordAlreadyExists))
+          case false => updateUserWithEmail(userId, updateUser)
+        }
+      case None => updateUserWithEmail(userId, updateUser)
+    }
+
+  def updateUserWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val updatedUser: User = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
@@ -100,7 +111,18 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
+  def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] =
+    updateUser.email match {
+      case Some(email) =>
+        exists(email).flatMap {
+          case true =>
+            Future.successful(Left(RecordAlreadyExists))
+          case false => updateUserPartiallyWithEmail(userId, updateUser)
+        }
+      case None => updateUserPartiallyWithEmail(userId, updateUser)
+    }
+
+  def updateUserPartiallyWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val actions = for {
       userOpt <- getUserOf(userId).result.headOption
       updateActionOption = userOpt.map { oldUser =>
@@ -131,13 +153,7 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     db.run(actions.transactionally)
   }
 
-  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] = {
-    db.run(getUserOf(userId).delete).map {
-      case 0 => false
-      case 1 => true
-      case _ => false
-    }
-
+  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] =
     db.run(getUserOf(userId).delete).transformWith {
       case Success(res) =>
         res match {
@@ -146,7 +162,6 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
         }
       case Failure(_) => Future.successful(Left(GenericDatabaseError))
     }
-  }
 
   private def getUserOf(userId: UUID): UserSelection =
     Users.filter(_.userId === userId)
