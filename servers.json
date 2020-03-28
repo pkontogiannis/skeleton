@@ -1,0 +1,27 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "skeleton db",
+      "Group": "Servers",
+      "Host": "skeleton_db",
+      "Port": 5432,
+      "Username": "skeletondb",
+      "PassFile": "/pgadmin/pgpassfile",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres",
+      "BGColor": "#ff9900",
+      "FGColor": "#000000"
+    },
+    "2": {
+      "Name": "integration test",
+      "Group": "Servers",
+      "Host": "skeleton_test_db",
+      "Port": 5432,
+      "Username": "skeletondb",
+      "PassFile": "/pgadmin/pgpassfile",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres",
+      "DBRestriction": "skeletondb"
+    }
+  }
+}
