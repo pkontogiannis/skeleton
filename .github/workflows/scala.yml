@@ -2,20 +2,47 @@ name: Scala CI
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - '*'
   pull_request:
-    branches: [ develop ]
+    branches:
+      - 'develop'
 
 jobs:
-  build:
-
+  check-fmt:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Run tests
-        run: sbt test
+
+      - name: Run fmt check
+        run: sbt scalafmtCheck
+
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12.2
+        env:
+          POSTGRES_USER: skeletondb
+          POSTGRES_PASSWORD: skeletondb
+          POSTGRES_DB: skeletondb
+        ports: ["5436:5432"]
+        options: --health-cmd pg_isready --health-interval 30s --health-timeout 10s --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Run Integration Tests
+        run: sbt it:test
