@@ -4,25 +4,27 @@ version := "0.1"
 
 scalaVersion := "2.13.1"
 
-version := "0.1"
-
-scalaVersion := "2.12.8"
-
 lazy val akkaHttpVersion       = "10.1.11"
 lazy val akkaVersion           = "2.6.4"
 lazy val scalaTestVersion      = "3.1.1"
 lazy val argonautVersion       = "6.2.5"
 lazy val slickVersion          = "3.3.2"
-lazy val flywayVersion         = "6.3.1"
+lazy val flywayVersion         = "6.3.2"
 lazy val jwtVersion            = "4.3.0"
 lazy val circeVersion          = "0.13.0"
 lazy val circeExtra            = "1.31.0"
 lazy val h2Version             = "1.4.200"
 lazy val catsVersion           = "2.1.1"
 lazy val scalaCheck            = "1.14.3"
-lazy val swaggerVersion        = "1.0.7-SNAPSHOT"
-lazy val postgresVersion       = "42.2.11"
+lazy val postgresVersion       = "42.2.12"
 lazy val logbackClassicVersion = "1.2.3"
+
+lazy val akkaHttpSwaggerVersion  = "2.0.4"
+lazy val akkaScalaSwaggerVersion = "2.0.6"
+lazy val swaggerVersion          = "2.1.2"
+lazy val jaxRSVersion            = "2.1.1"
+lazy val akkaHttpCorsVersion     = "0.4.2"
+lazy val swaggerUiVersion        = "1.4.0"
 
 libraryDependencies ++= {
   Seq(
@@ -47,13 +49,21 @@ libraryDependencies ++= {
     "org.postgresql"     % "postgresql"      % postgresVersion,
     "com.h2database"     % "h2"              % h2Version % Test,
     // Logging dependencies
-    "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.0",
+    "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
     "com.pauldijou"              %% "jwt-core"       % jwtVersion,
     "com.pauldijou"              %% "jwt-circe"      % jwtVersion,
     "org.typelevel"              %% "cats-core"      % catsVersion,
-    "ch.qos.logback"             % "logback-classic" % logbackClassicVersion
-
-//    "io.swagger" %% "swagger-scala-module" % swaggerVersion
+    "ch.qos.logback"             % "logback-classic" % logbackClassicVersion,
+    // Swagger dependencies
+    "ch.megard"                    %% "akka-http-cors"       % akkaHttpCorsVersion,
+    "javax.ws.rs"                  % "javax.ws.rs-api"       % jaxRSVersion,
+    "com.github.swagger-akka-http" %% "swagger-akka-http"    % akkaHttpSwaggerVersion,
+    "com.github.swagger-akka-http" %% "swagger-scala-module" % akkaScalaSwaggerVersion,
+    "io.swagger.core.v3"           % "swagger-core"          % swaggerVersion,
+    "io.swagger.core.v3"           % "swagger-annotations"   % swaggerVersion,
+    "io.swagger.core.v3"           % "swagger-models"        % swaggerVersion,
+    "io.swagger.core.v3"           % "swagger-jaxrs2"        % swaggerVersion,
+    "co.pragmati"                  %% "swagger-ui-akka-http" % swaggerUiVersion
   )
 }
 

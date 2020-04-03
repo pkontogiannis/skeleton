@@ -30,6 +30,7 @@ object ServiceError {
       }
     case RecordAlreadyExists => new RecordAlreadyExists()
     case RecordNotFound => DefaultNotFoundErrorHttp
+    case MethodNotAllowed(message) => MethodNotAllowedErrorHttp(message)
     case AuthenticationError() => UnauthorizedErrorHttp()
     case GenericDatabaseError => InternalErrorHttp("Unexpected error")
     case InsertModeIsNotDefined(mode) =>
@@ -44,6 +45,8 @@ object ServiceError {
   case class InsertModeIsNotDefined(view: String) extends ServiceError
 
   case class ClientServiceError(message: String) extends ServiceError
+
+  case class MethodNotAllowed(message: String) extends ServiceError
 
   case object GenericDatabaseError extends DatabaseError
 

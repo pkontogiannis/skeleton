@@ -22,7 +22,7 @@ object JWTUtils {
   private val accessTokenExpiration  = config.getInt("authentication.token.access")
   private val refreshTokenExpiration = config.getInt("authentication.token.refresh")
 
-  implicit val clock: Clock = Clock.systemUTC
+  implicit val clock: Clock = Clock.systemDefaultZone()
 
   def getAccessToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, accessTokenExpiration)

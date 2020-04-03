@@ -2,8 +2,8 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
-import com.skeleton.service.errors.DatabaseError
-import com.skeleton.service.errors.ServiceError.GenericDatabaseError
+import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, MethodNotAllowed }
+import com.skeleton.service.errors.{ DatabaseError, ServiceError }
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
 import com.skeleton.service.user.persistence.UserPersistence
 import com.typesafe.scalalogging.LazyLogging
@@ -56,11 +56,15 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
       case Left(error) => Left(error)
     }
 
-  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] =
-    userPersistence.deleteUser(userId).map {
-      case Right(value) =>
-        info(s"[UserService] successfully delete a user with uuid: $userId")
-        Right(value)
-      case Left(error) => Left(error)
-    }
+  def deleteUser(userId: UUID, connectedUserId: UUID): Future[Either[ServiceError, Boolean]] =
+    if (userId == connectedUserId)
+      Future.successful(Left(MethodNotAllowed("User cannot delete himself")))
+    else
+      userPersistence.deleteUser(userId).map {
+        case Right(value) =>
+          info(s"[UserService] successfully delete a user with uuid: $userId")
+          Right(value)
+        case Left(error) => Left(error)
+      }
+
 }

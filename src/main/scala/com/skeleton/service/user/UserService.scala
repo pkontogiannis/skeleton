@@ -2,7 +2,7 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
-import com.skeleton.service.errors.DatabaseError
+import com.skeleton.service.errors.{ DatabaseError, ServiceError }
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
 
 import scala.concurrent.Future
@@ -19,6 +19,6 @@ trait UserService {
 
   def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]]
 
-  def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]]
+  def deleteUser(userId: UUID, connectedUserId: UUID): Future[Either[ServiceError, Boolean]]
 
 }
