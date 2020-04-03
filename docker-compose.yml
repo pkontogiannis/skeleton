@@ -51,7 +51,168 @@ services:
     depends_on:
       - skeletondb
 
+  prometheus:
+    image: prom/prometheus:v2.17.1
+    volumes:
+      - ./monitoring/prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    depends_on:
+      - cadvisor
+    restart: always
+
+  cadvisor:
+    image: gcr.io/google_containers/cadvisor:v0.36.0
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8050:8080
+    restart: always
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9093:9093
+#    volumes:
+#      - ./alertmanager/:/etc/alertmanager/
+    restart: always
+#    command:
+#      - '--config.file=/etc/alertmanager/config.yml'
+#      - '--storage.path=/alertmanager'
+
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USERNAME=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning/:/etc/grafana/provisioning/
+    ports:
+      - "3000:3000"
+
+  node-exporter:
+    image: prom/node-exporter:v0.18.1
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points'
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    restart: always
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    volumes:
+      - type: bind
+        source: ./logging/elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch-data
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+#      ELASTIC_PASSWORD: root
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks
+      # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.6.0
+    volumes:
+      - type: bind
+        source: ./logging/logstash/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logging/logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    volumes:
+      - type: bind
+        source: ./logging/kibana/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  collector:
+    image: jaegertracing/jaeger-collector:1.17.1
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+    ports:
+      - "14269"
+      - "14268:14268"
+      - "14267"
+      - "14250"
+      - "9411:9411"
+    restart: on-failure
+    command: ["--es.server-urls=http://elasticsearch:9200","--es.tags-as-fields.all=true", "--es.num-shards=1", "--span-storage.type=elasticsearch", "--log-level=error"]
+
+  agent:
+    image: jaegertracing/jaeger-agent:1.17.1
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+    command: ["--collector.host-port=collector:14267"]
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+    restart: on-failure
+    depends_on:
+      - collector
+
+  query:
+    image: jaegertracing/jaeger-query:1.17.1
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+    ports:
+      - "16686:16686"
+      - "16687"
+    restart: on-failure
+    command: ["--es.server-urls=http://elasticsearch:9200", "--span-storage.type=elasticsearch", "--log-level=debug"]
+    depends_on:
+      - agent
+
 volumes:
   skeleton-data: {} # named volumes can be managed easier using docker-compose
   #  skeleton-test-data: {}
   skeleton-pgadmin: {}
+  prometheus-data: {}
+  grafana-data: {}
+  elasticsearch-data: {}
