@@ -6,12 +6,11 @@ import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, MethodNo
 import com.skeleton.service.errors.{ DatabaseError, ServiceError }
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
 import com.skeleton.service.user.persistence.UserPersistence
-import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserServiceDefault(val userPersistence: UserPersistence) extends UserService with LazyLogging {
+class UserServiceDefault(val userPersistence: UserPersistence) extends UserService {
 
   def getUsers: Future[Either[DatabaseError, List[UserDto]]] =
     userPersistence.getUsers.map {

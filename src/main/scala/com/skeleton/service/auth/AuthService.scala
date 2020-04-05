@@ -5,10 +5,11 @@ import java.util.UUID
 import com.skeleton.service.errors.DatabaseError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Future
 
-trait AuthService {
+trait AuthService extends LazyLogging {
 
   def loginUser(userLogin: UserLogin): Future[Either[AuthenticationError, UserLoginDto]]
 
