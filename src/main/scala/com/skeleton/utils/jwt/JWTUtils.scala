@@ -7,11 +7,12 @@ import com.skeleton.service.errors.ServiceError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel.Token
 import com.typesafe.config.{ Config, ConfigFactory }
+import com.typesafe.scalalogging.LazyLogging
 import pdi.jwt.{ Jwt, JwtAlgorithm, JwtCirce, JwtClaim }
 
 import scala.util.{ Failure, Success, Try }
 
-object JWTUtils {
+object JWTUtils extends LazyLogging {
 
   val config: Config = ConfigFactory.load()
 
@@ -27,12 +28,14 @@ object JWTUtils {
   def getAccessToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, accessTokenExpiration)
     val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    logger.info(s"[${this.getClass.getSimpleName}] successfully generate an access token for the user with uuid: $userId")
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
   def getRefreshToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
     val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    logger.info(s"[${this.getClass.getSimpleName}] successfully generate an refresh token for the user with uuid: $userId")
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
   }
 
@@ -59,7 +62,7 @@ object JWTUtils {
   def decodeToken(token: String): Either[AuthenticationError, Claims] = {
     val extractedToken: Either[AuthenticationError, String] = extractTokenBody(token)
     Jwt.decodeRaw(
-      extractedToken.right.get,
+      extractedToken.getOrElse(""),
       secretKey,
       acceptedAlgorithms
     ) match {

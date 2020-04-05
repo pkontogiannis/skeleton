@@ -15,13 +15,12 @@ import scala.concurrent.Future
 
 class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthService with LazyLogging {
 
-  import logger._
-
   def loginUser(userLogin: UserLogin): Future[Either[AuthenticationError, UserLoginDto]] =
     userPersistence.loginUser(userLogin.email, userLogin.password).map {
       case Right(user) =>
         val refreshToken = JWTUtils.getRefreshToken(user.userId, user.role)
         val accessToken  = JWTUtils.getAccessToken(user.userId, user.role)
+        logger.info(s"[${this.getClass.getSimpleName}] successfully login user with uuid: ${user.userId}")
         Right(
           UserLoginDto(
             user.email,
@@ -37,7 +36,7 @@ class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthServi
   def registerUser(userRegister: UserCreate): Future[Either[DatabaseError, UserDto]] =
     userPersistence.createUser(userRegister).map {
       case Right(value) =>
-        info(s"[UserService] successfully created a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully created a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) =>
         Left(error)
