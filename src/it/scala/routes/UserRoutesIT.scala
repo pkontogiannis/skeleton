@@ -28,7 +28,7 @@ class UserRoutesIT extends ServiceSuite {
 
     "successfully creates a user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
       val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
@@ -43,7 +43,7 @@ class UserRoutesIT extends ServiceSuite {
 
     "successfully handles a user with an existent email" in new Fixture {
       val user: UserCreate      = itData.userCreate1
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
       val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
@@ -64,7 +64,7 @@ class UserRoutesIT extends ServiceSuite {
 
     "successfully serves a user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
       val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
       val resultUser: UserDto =
@@ -86,7 +86,7 @@ class UserRoutesIT extends ServiceSuite {
     "successfully serves a list of users" in new Fixture {
       val user: UserCreate      = itData.userCreate1
       val user2: UserCreate     = itData.userCreate2
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
       val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {

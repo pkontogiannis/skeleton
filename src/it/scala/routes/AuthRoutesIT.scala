@@ -21,7 +21,7 @@ class AuthRoutesIT extends ServiceSuite {
 
     "successfully register a user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
 
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
@@ -36,7 +36,7 @@ class AuthRoutesIT extends ServiceSuite {
     "successfully login user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
       val userLogin: UserLogin  = UserLogin(user.email, user.password)
-      val expectedUser: UserDto = itData.expectedUser
+      val expectedUser: UserDto = itData.expectedUser(user)
 
       val resultUser: UserDto = Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
           handled shouldBe true
