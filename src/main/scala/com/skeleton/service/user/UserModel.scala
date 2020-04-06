@@ -44,25 +44,7 @@ object UserModel {
   def userCreateJson(userCreate: UserCreate): Json =
     userCreate.asJson
 
-  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String) {
-    //    implicit def userCreateJson(userCreate: UserCreate): String =
-    //      userCreate.asJson.toString
-  }
-
-  case class UpdateUser(
-      userId: Option[UUID],
-      password: Option[String],
-      email: Option[String],
-      firstName: Option[String],
-      lastName: Option[String],
-      role: Option[String]
-  )
-
-  case class UserLogin(email: String, password: String)
-
-  case class UserLoginDto(email: String, accessToken: Token, refreshToken: Token, role: String, tokenType: String)
-
-  case class Token(token: String, expiresIn: Int)
+  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String)
 
   implicit def userToUserDto(user: User): UserDto =
     UserDto(
@@ -73,9 +55,19 @@ object UserModel {
       user.role
     )
 
-  //
-  //  implicit class UserModel(val s: String) {
-  //    def userCreateJson(userCreate: UserCreate): String = exampleUser1.asJson.toString
-  //  }
+  case class UserLogin(email: String, password: String)
+
+  case class UserLoginDto(email: String, accessToken: Token, refreshToken: Token, role: String, tokenType: String)
+
+  case class Token(token: String, expiresIn: Int)
+
+  case class UpdateUser(
+      userId: Option[UUID],
+      email: Option[String],
+      password: Option[String],
+      firstName: Option[String],
+      lastName: Option[String],
+      role: Option[String]
+  )
 
 }

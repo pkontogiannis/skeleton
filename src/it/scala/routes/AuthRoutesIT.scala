@@ -1,20 +1,14 @@
 package routes
 
-import java.util.UUID
-
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server._
 import com.skeleton.service.auth.{ AuthRoutes, AuthServiceDefault }
 import com.skeleton.service.user.UserModel.{ UserCreate, UserDto, UserLogin, UserLoginDto }
 import com.skeleton.service.user.persistence.UserPersistenceSQL
 import io.circe.generic.auto._
-import routes.helpers.ServiceSuite
-
-import scala.collection.JavaConverters._
+import routes.helpers.{ ServiceSuite, ITTestData => itData }
 
 class AuthRoutesIT extends ServiceSuite {
-
-  private val roles: List[String] = config.getStringList("authentication.roles").asScala.toList
 
   trait Fixture {
     val userPersistence = new UserPersistenceSQL(dbAccess)
@@ -26,22 +20,8 @@ class AuthRoutesIT extends ServiceSuite {
   "Auth Routes" should {
 
     "successfully register a user" in new Fixture {
-      val user: UserCreate =
-        UserCreate(
-          "pkont4@gmail.com",
-          "Petros",
-          "Kontogiannis",
-          "password",
-          roles.head
-        )
-      val expectedUser: UserDto =
-        UserDto(
-          UUID.randomUUID(),
-          "pkont4@gmail.com",
-          "Petros",
-          "Kontogiannis",
-          roles.head
-        )
+      val user: UserCreate      = itData.userCreate1
+      val expectedUser: UserDto = itData.expectedUser(user)
 
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
@@ -54,23 +34,9 @@ class AuthRoutesIT extends ServiceSuite {
     }
 
     "successfully login user" in new Fixture {
-      val user: UserCreate =
-        UserCreate(
-          "pkont4_2@gmail.com",
-          "Petros",
-          "Kontogiannis",
-          "password",
-          roles.head
-        )
-      val userLogin: UserLogin = UserLogin(user.email, user.password)
-      val expectedUser: UserDto =
-        UserDto(
-          UUID.randomUUID(),
-          "pkont4_2@gmail.com",
-          "Petros",
-          "Kontogiannis",
-          roles.head
-        )
+      val user: UserCreate      = itData.userCreate1
+      val userLogin: UserLogin  = UserLogin(user.email, user.password)
+      val expectedUser: UserDto = itData.expectedUser(user)
 
       val resultUser: UserDto = Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
           handled shouldBe true
