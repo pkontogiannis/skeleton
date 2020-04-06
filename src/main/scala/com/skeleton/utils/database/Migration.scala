@@ -6,6 +6,8 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.flywaydb.core.internal.jdbc.DriverDataSource
 
+import scala.util.{ Failure, Success, Try }
+
 trait Migration extends Config with LazyLogging {
 
   val dataSource = new DriverDataSource(
@@ -23,10 +25,18 @@ trait Migration extends Config with LazyLogging {
 
   val flyway: Flyway = new Flyway(flywayConfig)
 
-  def flywayMigrate(): Int = {
-    logger.info(s"[${this.getClass.getSimpleName}] successfully made the migration.")
-    flyway.migrate()
-  }
+  def flywayMigrate(): Unit =
+    Try(flyway.migrate()) match {
+      case Failure(exception) =>
+        logger.error(
+          s"[${this.getClass.getSimpleName}] failed to make the migration to the script name ${flyway.info().current().getScript} " +
+          s"with reason ${exception.getMessage}."
+        )
+      case Success(_) =>
+        logger.info(
+          s"[${this.getClass.getSimpleName}] successfully made the migration to the script name ${flyway.info().current().getScript}. "
+        )
+    }
 
   def reloadSchema(): Int = {
     flyway.clean()

@@ -31,10 +31,7 @@ object Main extends App with Server with Config with Migration with LazyLogging 
     serverBinding.onComplete {
       case Success(bound) =>
         logger.info(
-          s"[${this.getClass.getSimpleName}] is online at http://: ${bound.localAddress.getHostString}:${bound.localAddress.getPort}/"
-        )
-        println(
-          s"com.skeleton.utils.server.Server online at http://${bound.localAddress.getHostString}:${bound.localAddress.getPort}/"
+          s"[${this.getClass.getSimpleName}] is online at http://:${bound.localAddress.getHostString}:${bound.localAddress.getPort}/"
         )
       case Failure(e) =>
         //        Console.err.println(s"com.skeleton.utils.server.Server could not start!")
