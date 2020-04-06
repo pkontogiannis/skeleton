@@ -44,12 +44,9 @@ object UserModel {
   def userCreateJson(userCreate: UserCreate): Json =
     userCreate.asJson
 
-  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String) {
-    //    implicit def userCreateJson(userCreate: UserCreate): String =
-    //      userCreate.asJson.toString
-  }
+  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String)
 
-  def userToUserDto(user: User): UserDto =
+  implicit def userToUserDto(user: User): UserDto =
     UserDto(
       user.userId,
       user.email,
@@ -72,10 +69,5 @@ object UserModel {
       lastName: Option[String],
       role: Option[String]
   )
-
-  //
-  //  implicit class UserModel(val s: String) {
-  //    def userCreateJson(userCreate: UserCreate): String = exampleUser1.asJson.toString
-  //  }
 
 }
