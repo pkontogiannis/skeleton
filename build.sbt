@@ -4,21 +4,24 @@ version := "0.1"
 
 scalaVersion := "2.13.1"
 
-lazy val akkaHttpVersion       = "10.1.11"
-lazy val akkaVersion           = "2.6.4"
-lazy val scalaTestVersion      = "3.1.1"
-lazy val argonautVersion       = "6.2.5"
-lazy val slickVersion          = "3.3.2"
-lazy val flywayVersion         = "6.3.2"
-lazy val jwtVersion            = "4.3.0"
-lazy val circeVersion          = "0.13.0"
-lazy val circeExtra            = "1.31.0"
-lazy val h2Version             = "1.4.200"
-lazy val catsVersion           = "2.1.1"
-lazy val scalaCheck            = "1.14.3"
-lazy val postgresVersion       = "42.2.12"
-lazy val logbackClassicVersion = "1.2.3"
-lazy val scalaLoggingVersion   = "3.9.2"
+lazy val akkaHttpVersion        = "10.1.11"
+lazy val akkaVersion            = "2.6.4"
+lazy val scalaTestVersion       = "3.1.1"
+lazy val argonautVersion        = "6.2.5"
+lazy val slickVersion           = "3.3.2"
+lazy val flywayVersion          = "6.3.2"
+lazy val jwtVersion             = "4.3.0"
+lazy val circeVersion           = "0.13.0"
+lazy val circeExtra             = "1.31.0"
+lazy val h2Version              = "1.4.200"
+lazy val catsVersion            = "2.1.1"
+lazy val scalaCheck             = "1.14.3"
+lazy val postgresVersion        = "42.2.12"
+lazy val logbackClassicVersion  = "1.2.3"
+lazy val scalaLoggingVersion    = "3.9.2"
+lazy val kamonBundleVersion     = "2.0.6"
+lazy val kamonPrometheusVersion = "2.0.1"
+lazy val kamonJaegerVersion     = "2.0.0"
 
 lazy val akkaHttpSwaggerVersion  = "2.0.4"
 lazy val akkaScalaSwaggerVersion = "2.0.6"
@@ -58,6 +61,10 @@ libraryDependencies ++= {
     "com.pauldijou"  %% "jwt-circe"      % jwtVersion,
     "org.typelevel"  %% "cats-core"      % catsVersion,
     "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
+    // monitoring
+    "io.kamon" %% "kamon-bundle"     % kamonBundleVersion,
+    "io.kamon" %% "kamon-prometheus" % kamonPrometheusVersion,
+    "io.kamon" %% "kamon-jaeger"     % kamonJaegerVersion,
     // Swagger dependencies
     "ch.megard"                    %% "akka-http-cors"       % akkaHttpCorsVersion,
     "javax.ws.rs"                  % "javax.ws.rs-api"       % jaxRSVersion,
