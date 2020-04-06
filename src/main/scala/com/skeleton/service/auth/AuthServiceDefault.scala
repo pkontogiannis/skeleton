@@ -8,20 +8,18 @@ import com.skeleton.service.user.UserModel
 import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
 import com.skeleton.service.user.persistence.UserPersistence
 import com.skeleton.utils.jwt.JWTUtils
-import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthService with LazyLogging {
-
-  import logger._
+class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthService {
 
   def loginUser(userLogin: UserLogin): Future[Either[AuthenticationError, UserLoginDto]] =
     userPersistence.loginUser(userLogin.email, userLogin.password).map {
       case Right(user) =>
         val refreshToken = JWTUtils.getRefreshToken(user.userId, user.role)
         val accessToken  = JWTUtils.getAccessToken(user.userId, user.role)
+        logger.info(s"[${this.getClass.getSimpleName}] successfully login user with uuid: ${user.userId}")
         Right(
           UserLoginDto(
             user.email,
@@ -31,13 +29,15 @@ class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthServi
             "Bearer"
           )
         )
-      case Left(_) => Left(AuthenticationError())
+      case Left(_) =>
+        logger.info(s"[${this.getClass.getSimpleName}] failed try login user with email: ${userLogin.email}")
+        Left(AuthenticationError())
     }
 
   def registerUser(userRegister: UserCreate): Future[Either[DatabaseError, UserDto]] =
     userPersistence.createUser(userRegister).map {
       case Right(value) =>
-        info(s"[UserService] successfully created a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully created a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) =>
         Left(error)

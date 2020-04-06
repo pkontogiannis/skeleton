@@ -18,6 +18,7 @@ lazy val catsVersion           = "2.1.1"
 lazy val scalaCheck            = "1.14.3"
 lazy val postgresVersion       = "42.2.12"
 lazy val logbackClassicVersion = "1.2.3"
+lazy val scalaLoggingVersion   = "3.9.2"
 
 lazy val akkaHttpSwaggerVersion  = "2.0.4"
 lazy val akkaScalaSwaggerVersion = "2.0.6"
@@ -25,6 +26,8 @@ lazy val swaggerVersion          = "2.1.2"
 lazy val jaxRSVersion            = "2.1.1"
 lazy val akkaHttpCorsVersion     = "0.4.2"
 lazy val swaggerUiVersion        = "1.4.0"
+
+scalacOptions += "-deprecation"
 
 libraryDependencies ++= {
   Seq(
@@ -49,11 +52,12 @@ libraryDependencies ++= {
     "org.postgresql"     % "postgresql"      % postgresVersion,
     "com.h2database"     % "h2"              % h2Version % Test,
     // Logging dependencies
-    "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
-    "com.pauldijou"              %% "jwt-core"       % jwtVersion,
-    "com.pauldijou"              %% "jwt-circe"      % jwtVersion,
-    "org.typelevel"              %% "cats-core"      % catsVersion,
-    "ch.qos.logback"             % "logback-classic" % logbackClassicVersion,
+    "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+    //JWT Dependencies
+    "com.pauldijou"  %% "jwt-core"       % jwtVersion,
+    "com.pauldijou"  %% "jwt-circe"      % jwtVersion,
+    "org.typelevel"  %% "cats-core"      % catsVersion,
+    "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
     // Swagger dependencies
     "ch.megard"                    %% "akka-http-cors"       % akkaHttpCorsVersion,
     "javax.ws.rs"                  % "javax.ws.rs-api"       % jaxRSVersion,

@@ -4,10 +4,11 @@ import java.util.UUID
 
 import com.skeleton.service.errors.{ DatabaseError, ServiceError }
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Future
 
-trait UserService {
+trait UserService extends LazyLogging {
 
   def getUsers: Future[Either[DatabaseError, List[UserDto]]]
 

@@ -2,6 +2,10 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
+import io.circe.Json
+import io.circe.generic.auto._
+import io.circe.syntax._
+
 import scala.language.implicitConversions
 
 object UserModel {
@@ -37,7 +41,13 @@ object UserModel {
 
   case class UserDto(userId: UUID, email: String, firstName: String, lastName: String, role: String)
 
-  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String)
+  def userCreateJson(userCreate: UserCreate): Json =
+    userCreate.asJson
+
+  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String) {
+    //    implicit def userCreateJson(userCreate: UserCreate): String =
+    //      userCreate.asJson.toString
+  }
 
   case class UpdateUser(
       userId: Option[UUID],
@@ -62,5 +72,10 @@ object UserModel {
       user.lastName,
       user.role
     )
+
+  //
+  //  implicit class UserModel(val s: String) {
+  //    def userCreateJson(userCreate: UserCreate): String = exampleUser1.asJson.toString
+  //  }
 
 }

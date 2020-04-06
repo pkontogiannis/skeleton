@@ -6,19 +6,18 @@ import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, MethodNo
 import com.skeleton.service.errors.{ DatabaseError, ServiceError }
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
 import com.skeleton.service.user.persistence.UserPersistence
-import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserServiceDefault(val userPersistence: UserPersistence) extends UserService with LazyLogging {
-
-  import logger._
+class UserServiceDefault(val userPersistence: UserPersistence) extends UserService {
 
   def getUsers: Future[Either[DatabaseError, List[UserDto]]] =
     userPersistence.getUsers.map {
       case Right(value) =>
-        info(s"[UserService] successfully retrieve a list of users with uuid: ${value.map(us => us.userId).mkString(", ")}")
+        logger.info(
+          s"[${this.getClass.getSimpleName}] successfully retrieve a list of users with uuid: ${value.map(us => us.userId).mkString(", ")}"
+        )
         Right(value.map(user => UserModel.userToUserDto(user)))
       case Left(_) => Left(GenericDatabaseError)
     }
@@ -26,7 +25,7 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
   def getUser(userId: UUID): Future[Either[DatabaseError, UserDto]] =
     userPersistence.getUser(userId).map {
       case Right(value) =>
-        info(s"[UserService] successfully retrieve a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully retrieve a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) => Left(error)
     }
@@ -34,7 +33,7 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
   def createUser(userCreate: UserCreate): Future[Either[DatabaseError, UserDto]] =
     userPersistence.createUser(userCreate).map {
       case Right(value) =>
-        info(s"[UserService] successfully created a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully created a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) =>
         Left(error)
@@ -43,7 +42,7 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
   def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] =
     userPersistence.updateUser(userId, updateUser).map {
       case Right(value) =>
-        info(s"[UserService] successfully update a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully update a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) => Left(error)
     }
@@ -51,7 +50,7 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
   def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, UserDto]] =
     userPersistence.updateUserPartially(userId, updateUser).map {
       case Right(value) =>
-        info(s"[UserService] successfully partially update a user with uuid: ${value.userId}")
+        logger.info(s"[${this.getClass.getSimpleName}] successfully partially update a user with uuid: ${value.userId}")
         Right(UserModel.userToUserDto(value))
       case Left(error) => Left(error)
     }
@@ -62,7 +61,7 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
     else
       userPersistence.deleteUser(userId).map {
         case Right(value) =>
-          info(s"[UserService] successfully delete a user with uuid: $userId")
+          logger.info(s"[${this.getClass.getSimpleName}] successfully delete a user with uuid: $userId")
           Right(value)
         case Left(error) => Left(error)
       }
