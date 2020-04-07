@@ -7,9 +7,7 @@ import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server._
 import com.skeleton.service.errors.ErrorResponse
 import com.skeleton.service.user.UserModel.{ Token, UpdateUser, UserCreate, UserDto }
-import com.skeleton.service.user.persistence.UserPersistenceSQL
 import com.skeleton.service.user.{ UserRoutes, UserServiceDefault }
-import com.skeleton.utils.database.DBAccess
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
 import routes.helpers.{ ServiceSuite, ITTestData => itData }
@@ -17,8 +15,6 @@ import routes.helpers.{ ServiceSuite, ITTestData => itData }
 class UserRoutesIT extends ServiceSuite {
 
   trait Fixture {
-    val dbAccess: DBAccess = DBAccess(system)
-    val userPersistence    = new UserPersistenceSQL(dbAccess)
     userPersistence.deleteAllUsers()
     val userService       = new UserServiceDefault(userPersistence)
     val userRoutes: Route = new UserRoutes(userService).userRoutes

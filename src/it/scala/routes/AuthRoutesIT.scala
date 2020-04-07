@@ -4,14 +4,12 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server._
 import com.skeleton.service.auth.{ AuthRoutes, AuthServiceDefault }
 import com.skeleton.service.user.UserModel.{ UserCreate, UserDto, UserLogin, UserLoginDto }
-import com.skeleton.service.user.persistence.UserPersistenceSQL
 import io.circe.generic.auto._
 import routes.helpers.{ ServiceSuite, ITTestData => itData }
 
 class AuthRoutesIT extends ServiceSuite {
 
   trait Fixture {
-    val userPersistence = new UserPersistenceSQL(dbAccess)
     userPersistence.deleteAllUsers()
     val authService       = new AuthServiceDefault(userPersistence)
     val authRoutes: Route = new AuthRoutes(authService).authRoutes
