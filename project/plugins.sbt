@@ -2,7 +2,7 @@ lazy val sbtNativePackagerVersion = "1.6.1"
 lazy val sbtRevolverVersion       = "0.9.1"
 lazy val sbtScalafmtVersion       = "2.3.2"
 lazy val sbtUpdatesVersion        = "0.5.0"
-lazy val sbtScoverageVersion      = "1.5.1"
+lazy val sbtScoverageVersion      = "1.6.1"
 lazy val scalaStyleVersion        = "1.0.0"
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager"    % sbtNativePackagerVersion)

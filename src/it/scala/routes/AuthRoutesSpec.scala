@@ -7,7 +7,7 @@ import com.skeleton.service.user.UserModel.{ UserCreate, UserDto, UserLogin, Use
 import io.circe.generic.auto._
 import routes.helpers.{ ServiceSuite, ITTestData => itData }
 
-class AuthRoutesIT extends ServiceSuite {
+class AuthRoutesSpec extends ServiceSuite {
 
   trait Fixture {
     userPersistence.deleteAllUsers()
