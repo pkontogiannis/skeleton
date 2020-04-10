@@ -82,14 +82,20 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
       }
 
   def updateUser(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] =
-    updateUser.email match {
-      case Some(email) =>
-        exists(email).flatMap {
-          case true =>
-            Future.successful(Left(RecordAlreadyExists))
-          case false => updateUserWithEmail(userId, updateUser)
+    getUser(userId).flatMap {
+      case Right(user) =>
+        updateUser.email match {
+          case Some(email) if user.email != email =>
+            exists(email).flatMap {
+              case true =>
+                Future.successful(Left(RecordAlreadyExists))
+              case false =>
+                updateUserWithEmail(userId, updateUser)
+            }
+          case Some(_) => updateUserWithEmail(userId, updateUser)
+          case None => updateUserWithEmail(userId, updateUser)
         }
-      case None => updateUserWithEmail(userId, updateUser)
+      case Left(_) => Future.successful(Left(GenericDatabaseError))
     }
 
   def updateUserWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
@@ -112,15 +118,31 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   }
 
   def updateUserPartially(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] =
-    updateUser.email match {
-      case Some(email) =>
-        exists(email).flatMap {
-          case true =>
-            Future.successful(Left(RecordAlreadyExists))
-          case false => updateUserPartiallyWithEmail(userId, updateUser)
+    getUser(userId).flatMap {
+      case Right(user) =>
+        updateUser.email match {
+          case Some(email) if user.email != email =>
+            exists(email).flatMap {
+              case true =>
+                Future.successful(Left(RecordAlreadyExists))
+              case false =>
+                updateUserPartiallyWithEmail(userId, updateUser)
+            }
+          case Some(_) => updateUserPartiallyWithEmail(userId, updateUser)
+          case None => updateUserPartiallyWithEmail(userId, updateUser)
         }
-      case None => updateUserPartiallyWithEmail(userId, updateUser)
+      case Left(_) => Future.successful(Left(GenericDatabaseError))
     }
+
+  //    updateUser.email match {
+  //      case Some(email) =>
+  //        exists(email).flatMap {
+  //          case true =>
+  //            Future.successful(Left(RecordAlreadyExists))
+  //          case false => updateUserPartiallyWithEmail(userId, updateUser)
+  //        }
+  //      case None => updateUserPartiallyWithEmail(userId, updateUser)
+  //    }
 
   def updateUserPartiallyWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val actions = for {

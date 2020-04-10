@@ -70,4 +70,13 @@ object UserModel {
       role: Option[String]
   )
 
+  case class UpdateUsr[F[_]](
+      userId: F[UUID],
+      email: F[String],
+      password: F[String],
+      firstName: F[String],
+      lastName: F[String],
+      role: F[String]
+  )
+
 }

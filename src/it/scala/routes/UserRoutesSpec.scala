@@ -147,7 +147,7 @@ class UserRoutesSpec extends ServiceSuite {
       }
     }
 
-    "successfully partially updates a user" in new Fixture {
+    "successfully partially updates a user with different email" in new Fixture {
       val user: UserCreate   = itData.userCreate1
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
       val updateUser: UpdateUser = UpdateUser(
@@ -171,6 +171,64 @@ class UserRoutesSpec extends ServiceSuite {
           assert(
             result.firstName === updateUser.firstName.get
           )
+        }
+      }
+    }
+
+    "successfully partially update a use with the same email" in new Fixture {
+      val user: UserCreate   = itData.userCreate1
+      val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
+      val updateUser: UpdateUser = UpdateUser(
+        userId    = None,
+        email     = Some(user.email),
+        firstName = Some("Isidor"),
+        password  = None,
+        lastName  = None,
+        role      = None
+      )
+
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Patch("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val result: UserDto = responseAs[UserDto]
+          assert(
+            result.firstName === updateUser.firstName.get
+          )
+        }
+      }
+    }
+
+    "failed to partially update a user" in new Fixture {
+      val user1: UserCreate  = itData.userCreate1
+      val user2: UserCreate  = itData.userCreate1
+      val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
+      val updateUser: UpdateUser = UpdateUser(
+        userId    = None,
+        email     = Some(user1.email),
+        firstName = Some("Isidor"),
+        password  = None,
+        lastName  = None,
+        role      = None
+      )
+
+      Post("/api/v01/users", user1) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Created)
+
+        Post("/api/v01/users", user2) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Created)
+          val resultUser: UserDto = responseAs[UserDto]
+
+          Patch("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+            handled shouldBe true
+            status should ===(StatusCodes.Conflict)
+          }
         }
       }
     }

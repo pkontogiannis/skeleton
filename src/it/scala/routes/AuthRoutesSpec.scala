@@ -31,6 +31,20 @@ class AuthRoutesSpec extends ServiceSuite {
       }
     }
 
+    //    "failed to register a user" in new Fixture {
+    //      val user: UserCreate      = itData.userCreate1
+    //      val expectedUser: UserDto = itData.expectedUser(user)
+    //
+    //      Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
+    //        handled shouldBe true
+    //        status should ===(StatusCodes.Created)
+    //        val resultUser: UserDto = responseAs[UserDto]
+    //        assert(
+    //          resultUser.email === expectedUser.email
+    //        )
+    //      }
+    //    }
+
     "successfully login user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
       val userLogin: UserLogin  = UserLogin(user.email, user.password)
