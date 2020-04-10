@@ -1,41 +1,27 @@
-<!--<configuration>
+<configuration scan="true" scanPeriod="15 seconds">
     <property name="logDir" value="./logs/"/>
+    <property name="logFile" value="LogFile"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
     <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logDir}error.log</file>
+        <file>${logDir}/${logFile}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logDir}error.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--<fileNamePattern>${LOG_DIR}/%d{yyyy/MM}/${LOG_FILE}.gz</fileNamePattern>-->
             <maxHistory>1</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <root level="error">
-        <appender-ref ref="error"/>
-    </root>
-
-    <root level="debug">
-        <appender-ref ref="STDOUT"/>
-    </root>
-</configuration>-->
-
-<configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>*** \(%logger{30}\)%green(%X{debugId}) %msg%n</pattern>
-        </encoder>
-    </appender>
-    <root level="${log.root:-info}">
-        <appender-ref ref="STDOUT"/>
-    </root>
     <logger name="slick.basic.BasicBackend.action" level="${log.action:-info}"/>
     <logger name="slick.basic.BasicBackend.stream" level="${log.stream:-info}"/>
     <logger name="slick.compiler" level="${log.qcomp:-info}"/>
@@ -80,4 +66,11 @@
     <logger name="slick.memory.QueryInterpreter" level="${log.interpreter:-inherited}"/>
     <logger name="slick.relational.ResultConverterCompiler" level="${log.resultConverter:-inherited}"/>
     <logger name="slick.util.AsyncExecutor" level="${log.asyncExecutor:-inherited}"/>
+
+    <root level="error">
+        <appender-ref ref="error"/>
+    </root>
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+    </root>
 </configuration>
