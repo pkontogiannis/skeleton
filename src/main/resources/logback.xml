@@ -8,19 +8,23 @@
         </encoder>
     </appender>
 
-    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logDir}error.log</file>
-        <file>${logDir}/${logFile}.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logDir}error.log.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!--<fileNamePattern>${LOG_DIR}/%d{yyyy/MM}/${LOG_FILE}.gz</fileNamePattern>-->
-            <maxHistory>1</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <!--
+
+        <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${logDir}error.log</file>
+            <file>${logDir}/${logFile}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${logDir}error.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+                &lt;!&ndash;<fileNamePattern>${LOG_DIR}/%d{yyyy/MM}/${LOG_FILE}.gz</fileNamePattern>&ndash;&gt;
+                <maxHistory>1</maxHistory>
+                <totalSizeCap>100MB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+    -->
 
     <logger name="slick.basic.BasicBackend.action" level="${log.action:-info}"/>
     <logger name="slick.basic.BasicBackend.stream" level="${log.stream:-info}"/>
@@ -67,9 +71,11 @@
     <logger name="slick.relational.ResultConverterCompiler" level="${log.resultConverter:-inherited}"/>
     <logger name="slick.util.AsyncExecutor" level="${log.asyncExecutor:-inherited}"/>
 
+    <!--
     <root level="error">
         <appender-ref ref="error"/>
     </root>
+    -->
     <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
