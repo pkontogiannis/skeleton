@@ -31,40 +31,42 @@ class AuthRoutesSpec extends ServiceSuite {
       }
     }
 
-    //    "failed to register a user" in new Fixture {
-    //      val user: UserCreate      = itData.userCreate1
-    //      val expectedUser: UserDto = itData.expectedUser(user)
-    //
-    //      Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
-    //        handled shouldBe true
-    //        status should ===(StatusCodes.Created)
-    //        val resultUser: UserDto = responseAs[UserDto]
-    //        assert(
-    //          resultUser.email === expectedUser.email
-    //        )
-    //      }
-    //    }
-
     "successfully login user" in new Fixture {
       val user: UserCreate      = itData.userCreate1
       val userLogin: UserLogin  = UserLogin(user.email, user.password)
       val expectedUser: UserDto = itData.expectedUser(user)
 
-      val resultUser: UserDto = Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
-          handled shouldBe true
-          status should ===(StatusCodes.Created)
-          responseAs[UserDto]
-        }
-
-      Post("/api/v01/auth/login", userLogin) ~> authRoutes ~> check {
+      Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
-        status should ===(StatusCodes.OK)
-        val resultUser: UserLoginDto = responseAs[UserLoginDto]
-        assert(
-          resultUser.email === expectedUser.email
-        )
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Post("/api/v01/auth/login", userLogin) ~> authRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val resultUser: UserLoginDto = responseAs[UserLoginDto]
+          assert(
+            resultUser.email === expectedUser.email
+          )
+        }
       }
     }
+
+    "correctly failed to login a user" in new Fixture {
+      val user: UserCreate      = itData.userCreate1
+      val userLogin: UserLogin  = UserLogin(user.email, "dummyPassword")
+      val expectedUser: UserDto = itData.expectedUser(user)
+
+      Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Created)
+        Post("/api/v01/auth/login", userLogin) ~> authRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Unauthorized)
+        }
+      }
+    }
+
   }
 
 }
