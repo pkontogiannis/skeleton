@@ -100,6 +100,12 @@ Start services with sbt:
 sbt run 
 ```
 
+or use the sbt revolver so you don't have to recompile and rerun after every change:
+
+```
+sbt ~reStart
+```
+
 With the service up, you can see the Open API documentation under [Swagger page](http://localhost:8080/api-docs/swagger.json).
 
 ### Testing
@@ -111,6 +117,14 @@ the test database running and then we can run the integration tests using `test`
 $ sbt
 > it:test
 ```
+
+or better run:
+
+```
+sbt qa 
+```
+
+to check also dependeny updates, fmt, scalastyle etc.
 
 ## Versioning
 

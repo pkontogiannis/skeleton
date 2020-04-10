@@ -78,7 +78,7 @@ object JWTUtils extends LazyLogging {
 
   def extractTokenBody(token: String): Either[AuthenticationError, String] = token match {
     case tok if tok.startsWith(tokenPrefix) =>
-      Right(tok.substring(7))
+      Right(tok.substring(tokenPrefix.length()))
     case _ => Left(AuthenticationError())
   }
 
