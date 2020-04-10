@@ -12,7 +12,7 @@ import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
 import routes.helpers.{ ServiceSuite, ITTestData => itData }
 
-class UserRoutesIT extends ServiceSuite {
+class UserRoutesSpec extends ServiceSuite {
 
   trait Fixture {
     userPersistence.deleteAllUsers()
@@ -45,16 +45,16 @@ class UserRoutesIT extends ServiceSuite {
       Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
         status should ===(StatusCodes.Created)
-      }
 
-      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.Conflict)
-        val errorResponse: ErrorResponse = responseAs[ErrorResponse]
-        assert(
-          errorResponse.code === "RecordAlreadyExists" &&
-          errorResponse.message === "This email already exists"
-        )
+        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Conflict)
+          val errorResponse: ErrorResponse = responseAs[ErrorResponse]
+          assert(
+            errorResponse.code === "RecordAlreadyExists" &&
+            errorResponse.message === "This email already exists"
+          )
+        }
       }
     }
 
@@ -63,19 +63,19 @@ class UserRoutesIT extends ServiceSuite {
       val expectedUser: UserDto = itData.expectedUser(user)
       val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
-      val resultUser: UserDto =
-        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-          handled shouldBe true
-          status should ===(StatusCodes.Created)
-          responseAs[UserDto]
-        }
-      Get("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
-        status should ===(StatusCodes.OK)
-        val result: UserDto = responseAs[UserDto]
-        assert(
-          result.email === expectedUser.email
-        )
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Get("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val result: UserDto = responseAs[UserDto]
+          assert(
+            result.email === expectedUser.email
+          )
+        }
       }
     }
 
@@ -89,15 +89,17 @@ class UserRoutesIT extends ServiceSuite {
         handled shouldBe true
         status should ===(StatusCodes.Created)
         responseAs[UserDto]
-      }
-      Post("/api/v01/users", user2) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.Created)
-      }
-      Get("/api/v01/users") ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-        handled shouldBe true
-        status should ===(StatusCodes.OK)
-        responseAs[List[UserDto]].length shouldBe 2
+
+        Post("/api/v01/users", user2) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.Created)
+
+          Get("/api/v01/users") ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+            handled shouldBe true
+            status should ===(StatusCodes.OK)
+            responseAs[List[UserDto]].length shouldBe 2
+          }
+        }
       }
     }
 
@@ -128,21 +130,20 @@ class UserRoutesIT extends ServiceSuite {
         role      = None
       )
 
-      val resultUser: UserDto =
-        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-          handled shouldBe true
-          status should ===(StatusCodes.Created)
-          responseAs[UserDto]
-        }
-
-      Put("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
-        status should ===(StatusCodes.OK)
-        val result: UserDto = responseAs[UserDto]
-        assert(
-          result.email === updateUser.email.get &&
-          result.firstName === ""
-        )
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Put("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val result: UserDto = responseAs[UserDto]
+          assert(
+            result.email === updateUser.email.get &&
+            result.firstName === ""
+          )
+        }
       }
     }
 
@@ -158,20 +159,19 @@ class UserRoutesIT extends ServiceSuite {
         role      = None
       )
 
-      val resultUser: UserDto =
-        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-          handled shouldBe true
-          status should ===(StatusCodes.Created)
-          responseAs[UserDto]
-        }
-
-      Patch("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
-        status should ===(StatusCodes.OK)
-        val result: UserDto = responseAs[UserDto]
-        assert(
-          result.firstName === updateUser.firstName.get
-        )
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Patch("/api/v01/users/" + resultUser.userId, updateUser) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val result: UserDto = responseAs[UserDto]
+          assert(
+            result.firstName === updateUser.firstName.get
+          )
+        }
       }
     }
 
@@ -179,16 +179,15 @@ class UserRoutesIT extends ServiceSuite {
       val user: UserCreate   = itData.userCreate1
       val accessToken: Token = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
 
-      val resultUser: UserDto =
-        Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
-          handled shouldBe true
-          status should ===(StatusCodes.Created)
-          responseAs[UserDto]
-        }
-
-      Delete("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
         handled shouldBe true
-        status should ===(StatusCodes.NoContent)
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Delete("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.NoContent)
+        }
       }
     }
 
