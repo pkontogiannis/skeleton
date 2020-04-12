@@ -19,6 +19,8 @@ lazy val scalaCheck             = "1.14.3"
 lazy val postgresVersion        = "42.2.12"
 lazy val logbackClassicVersion  = "1.2.3"
 lazy val scalaLoggingVersion    = "3.9.2"
+lazy val logbackEncoderVersion  = "6.3"
+lazy val janinoVersion          = "3.1.2"
 lazy val kamonBundleVersion     = "2.1.0"
 lazy val kamonPrometheusVersion = "2.1.0"
 lazy val kamonJaegerVersion     = "2.1.0"
@@ -53,14 +55,16 @@ libraryDependencies ++= {
     "com.typesafe.slick" %% "slick"          % slickVersion,
     "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
     "org.postgresql"     % "postgresql"      % postgresVersion,
-    "com.h2database"     % "h2"              % h2Version % Test,
     // Logging dependencies
-    "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+    "com.typesafe.scala-logging" %% "scala-logging"           % scalaLoggingVersion,
+    "ch.qos.logback"             % "logback-classic"          % logbackClassicVersion,
+    "ch.qos.logback"             % "logback-access"           % logbackClassicVersion,
+    "net.logstash.logback"       % "logstash-logback-encoder" % logbackEncoderVersion,
+    "org.codehaus.janino"        % "janino"                   % janinoVersion,
     //JWT Dependencies
-    "com.pauldijou"  %% "jwt-core"       % jwtVersion,
-    "com.pauldijou"  %% "jwt-circe"      % jwtVersion,
-    "org.typelevel"  %% "cats-core"      % catsVersion,
-    "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
+    "com.pauldijou" %% "jwt-core"  % jwtVersion,
+    "com.pauldijou" %% "jwt-circe" % jwtVersion,
+    "org.typelevel" %% "cats-core" % catsVersion,
     // monitoring
     "io.kamon" %% "kamon-bundle"     % kamonBundleVersion,
     "io.kamon" %% "kamon-prometheus" % kamonPrometheusVersion,
