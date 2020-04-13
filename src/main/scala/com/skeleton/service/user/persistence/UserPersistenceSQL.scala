@@ -60,16 +60,6 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     Users.filter(_.email === email).exists.result
   }
 
-  def getUser(userId: UUID): Future[Either[DatabaseError, User]] =
-    db.run(Users.filter(_.userId === userId).result.headOption).transformWith {
-      case Success(optUser) =>
-        optUser match {
-          case Some(user) => Future.successful(Right(user))
-          case None => Future.successful(Left(RecordNotFound))
-        }
-      case Failure(_) => Future.successful(Left(GenericDatabaseError))
-    }
-
   def loginUser(email: String, password: String): Future[Either[DatabaseError, User]] =
     db.run(Users.filter(user => user.email === email && user.password === password).result.headOption)
       .transformWith {
@@ -101,10 +91,10 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   def updateUserWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val updatedUser: User = UserModel.updateUserToUser(userId, updateUser)
     val actions = for {
-      userOpt <- getUserOf(userId).result.headOption
+      userOpt <- getUserQuery(userId)
       updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
-      us <- getUserOf(userId).result.headOption
+      us <- getUserQuery(userId)
     } yield us
 
     db.run(actions.transactionally).transformWith {
@@ -134,25 +124,25 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
       case Left(_) => Future.successful(Left(GenericDatabaseError))
     }
 
-  //    updateUser.email match {
-  //      case Some(email) =>
-  //        exists(email).flatMap {
-  //          case true =>
-  //            Future.successful(Left(RecordAlreadyExists))
-  //          case false => updateUserPartiallyWithEmail(userId, updateUser)
-  //        }
-  //      case None => updateUserPartiallyWithEmail(userId, updateUser)
-  //    }
+  def getUser(userId: UUID): Future[Either[DatabaseError, User]] =
+    db.run(Users.filter(_.userId === userId).result.headOption).transformWith {
+      case Success(optUser) =>
+        optUser match {
+          case Some(user) => Future.successful(Right(user))
+          case None => Future.successful(Left(RecordNotFound))
+        }
+      case Failure(_) => Future.successful(Left(GenericDatabaseError))
+    }
 
   def updateUserPartiallyWithEmail(userId: UUID, updateUser: UpdateUser): Future[Either[DatabaseError, User]] = {
     val actions = for {
-      userOpt <- getUserOf(userId).result.headOption
+      userOpt <- getUserQuery(userId)
       updateActionOption = userOpt.map { oldUser =>
         val updatedUser = UserModel.updateUserRow(oldUser, updateUser)
         getUserOf(userId).update(updatedUser)
       }
       _ <- updateActionOption.getOrElse(DBIO.successful(0))
-      us <- getUserOf(userId).result.headOption
+      us <- getUserQuery(userId)
     } yield us
     db.run(actions.transactionally).transformWith {
       case Success(optUser) =>
@@ -164,16 +154,8 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
     }
   }
 
-  def editUser(userId: UUID, updateUser: UpdateUser): Future[User] = {
-    val updatedUser = UserModel.updateUserToUser(userId, updateUser)
-    val actions = for {
-      userOpt <- getUserOf(userId).result.headOption
-      updateActionOption = userOpt.map(_ => getUserOf(userId).update(updatedUser.copy(id = userOpt.get.id)))
-      _ <- updateActionOption.getOrElse(DBIO.successful(0))
-      us <- getUserOf(userId).result.head
-    } yield us
-    db.run(actions.transactionally)
-  }
+  private def getUserQuery(userId: UUID): DBIO[Option[User]] =
+    getUserOf(userId).result.headOption
 
   def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] =
     db.run(getUserOf(userId).delete).transformWith {
@@ -197,7 +179,4 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
         }
       case Failure(_) => Future.successful(Left(GenericDatabaseError))
     }
-
-  private def getUserQuery(userId: UUID): DBIO[Option[User]] =
-    getUserOf(userId).result.headOption
 }

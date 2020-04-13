@@ -51,9 +51,12 @@ class AuthServiceDefault(val userPersistence: UserPersistence) extends AuthServi
     )
 
   def getRefreshToken(userId: UUID, role: String): Future[Either[AuthenticationError, Token]] =
-    Future(
-      Right(
-        JWTUtils.getRefreshToken(userId, role)
-      )
-    )
+    userPersistence.getUser(userId).map {
+      case Left(_) => Left(AuthenticationError())
+      case Right(_) =>
+        Right(
+          JWTUtils.getRefreshToken(userId, role)
+        )
+    }
+
 }

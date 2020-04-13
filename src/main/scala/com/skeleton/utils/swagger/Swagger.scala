@@ -15,14 +15,19 @@ object Swagger extends SwaggerHttpService with Config {
   override val apiDocsPath               = "api-docs" //where you want the swagger-json endpoint exposed
   override val info: Info                = Info(title = "Skeleton API", version = "v01") //provides license and other description details
   override val schemes                   = List("http")
+  override val securitySchemes = Map(
+    "bearerAuth" -> new SecurityScheme()
+      .in(SecurityScheme.In.HEADER)
+      .`type`(SecurityScheme.Type.HTTP)
+      .scheme("bearer")
+      .bearerFormat("JWT")
+  )
 
-  private val bearerScheme: SecurityScheme = new SecurityScheme()
-    .in(SecurityScheme.In.HEADER)
-    .`type`(SecurityScheme.Type.HTTP)
-    .scheme("bearer")
-    .bearerFormat("JWT")
-
-  override val securitySchemes = Map("bearerAuth" -> bearerScheme)
+  override val unwantedDefinitions =
+    Seq(
+      "Function1",
+      "Function1RequestContextFutureRouteResult"
+    )
 
   override def routes: Route = super.routes ~ get {
     pathPrefix("") {
@@ -32,11 +37,5 @@ object Swagger extends SwaggerHttpService with Config {
     } ~
     getFromResourceDirectory("swagger-ui")
   }
-
-  override val unwantedDefinitions =
-    Seq(
-      "Function1",
-      "Function1RequestContextFutureRouteResult"
-    )
 
 }

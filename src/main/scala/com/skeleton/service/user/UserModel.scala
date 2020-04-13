@@ -29,6 +29,9 @@ object UserModel {
       role      = update.role.getOrElse(old.role)
     )
 
+  def userCreateJson(userCreate: UserCreate): Json =
+    userCreate.asJson
+
   case class User(
       id: Option[Int] = None,
       userId: UUID,
@@ -40,9 +43,6 @@ object UserModel {
   )
 
   case class UserDto(userId: UUID, email: String, firstName: String, lastName: String, role: String)
-
-  def userCreateJson(userCreate: UserCreate): Json =
-    userCreate.asJson
 
   case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String)
 
