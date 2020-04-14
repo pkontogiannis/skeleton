@@ -75,7 +75,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
-      - 8050:8080
+      - 8060:8080
     restart: always
 
   alertmanager:
