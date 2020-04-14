@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
 import akka.http.scaladsl.server._
-import com.skeleton.service.auth.{ AuthRoutes, AuthServiceDefault }
+import com.skeleton.service.auth.{ AuthRoutes, AuthService }
 import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
@@ -14,9 +14,9 @@ import routes.helpers.{ ServiceSuite, ITTestData => itData }
 class AuthRoutesSpec extends ServiceSuite {
 
   trait Fixture {
-    userPersistence.deleteAllUsers()
-    val authService       = new AuthServiceDefault(userPersistence)
-    val authRoutes: Route = new AuthRoutes(authService).authRoutes
+    dependencies.userService.deleteAllUsers()
+    val authService: AuthService = dependencies.authService
+    val authRoutes: Route        = new AuthRoutes(authService).authRoutes
   }
 
   "Auth Routes" should {
@@ -43,7 +43,6 @@ class AuthRoutesSpec extends ServiceSuite {
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
         status should ===(StatusCodes.Created)
-        val resultUser: UserDto = responseAs[UserDto]
 
         Post("/api/v01/auth/login", userLogin) ~> authRoutes ~> check {
           handled shouldBe true
@@ -57,9 +56,8 @@ class AuthRoutesSpec extends ServiceSuite {
     }
 
     "correctly failed to login a user" in new Fixture {
-      val user: UserCreate      = itData.userCreate1
-      val userLogin: UserLogin  = UserLogin(user.email, "dummyPassword")
-      val expectedUser: UserDto = itData.expectedUser(user)
+      val user: UserCreate     = itData.userCreate1
+      val userLogin: UserLogin = UserLogin(user.email, "dummyPassword")
 
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
@@ -72,9 +70,8 @@ class AuthRoutesSpec extends ServiceSuite {
     }
 
     "successfully generate refresh token" in new Fixture {
-      val user: UserCreate      = itData.userCreate1
-      val userLogin: UserLogin  = UserLogin(user.email, user.password)
-      val expectedUser: UserDto = itData.expectedUser(user)
+      val user: UserCreate     = itData.userCreate1
+      val userLogin: UserLogin = UserLogin(user.email, user.password)
 
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
@@ -98,9 +95,8 @@ class AuthRoutesSpec extends ServiceSuite {
     }
 
     "successfully generate access token" in new Fixture {
-      val user: UserCreate      = itData.userCreate1
-      val userLogin: UserLogin  = UserLogin(user.email, user.password)
-      val expectedUser: UserDto = itData.expectedUser(user)
+      val user: UserCreate     = itData.userCreate1
+      val userLogin: UserLogin = UserLogin(user.email, user.password)
 
       Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
         handled shouldBe true
@@ -141,6 +137,12 @@ class AuthRoutesSpec extends ServiceSuite {
       }
     }
 
+    "successfully unauthorized a request without header" in new Fixture {
+      Get("/api/v01/auth/token/access") ~> authRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Unauthorized)
+      }
+    }
   }
 
 }

@@ -15,7 +15,7 @@ object Main extends App with Server with Config with Migration with LazyLogging 
 
   def startApplication(): Unit = {
 
-    val dependencies: Dependencies = Dependencies.fromConfig(configuration)
+    val dependencies: Dependencies = Dependencies.fromConfig
 
     val routes: Route = cors()(Routes.buildRoutes(dependencies))
 

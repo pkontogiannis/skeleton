@@ -5,9 +5,10 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server._
+import com.skeleton.service.auth.{ AuthRoutes, AuthService }
 import com.skeleton.service.errors.ErrorResponse
-import com.skeleton.service.user.UserModel.{ Token, UpdateUser, UserCreate, UserDto }
-import com.skeleton.service.user.{ UserRoutes, UserServiceDefault }
+import com.skeleton.service.user.UserModel.{ Token, UpdateUser, UserCreate, UserDto, UserLogin, UserLoginDto }
+import com.skeleton.service.user.{ UserRoutes, UserService }
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
 import routes.helpers.{ ServiceSuite, ITTestData => itData }
@@ -15,9 +16,11 @@ import routes.helpers.{ ServiceSuite, ITTestData => itData }
 class UserRoutesSpec extends ServiceSuite {
 
   trait Fixture {
-    userPersistence.deleteAllUsers()
-    val userService       = new UserServiceDefault(userPersistence)
-    val userRoutes: Route = new UserRoutes(userService).userRoutes
+    dependencies.userService.deleteAllUsers()
+    val userService: UserService = dependencies.userService
+    val authService: AuthService = dependencies.authService
+    val userRoutes: Route        = new UserRoutes(userService).userRoutes
+    val authRoutes: Route        = new AuthRoutes(authService).authRoutes
   }
 
   "User routes" should {
@@ -245,6 +248,38 @@ class UserRoutesSpec extends ServiceSuite {
         Delete("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
           handled shouldBe true
           status should ===(StatusCodes.NoContent)
+        }
+      }
+    }
+
+    "successfully not allowed user to delete himself" in new Fixture {
+      val user: UserCreate      = itData.userCreate1
+      val userLogin: UserLogin  = UserLogin(user.email, user.password)
+      val expectedUser: UserDto = itData.expectedUser(user)
+
+      Post("/api/v01/auth/register", user) ~> authRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+
+        Post("/api/v01/auth/login", userLogin) ~> authRoutes ~> check {
+          handled shouldBe true
+          status should ===(StatusCodes.OK)
+          val resultLoginUser: UserLoginDto = responseAs[UserLoginDto]
+          assert(
+            resultLoginUser.email === expectedUser.email
+          )
+
+          Delete("/api/v01/users/" + resultUser.userId) ~> RawHeader("Authorization", resultLoginUser.accessToken.token) ~>
+          userRoutes ~> check {
+            handled shouldBe true
+            status should ===(StatusCodes.MethodNotAllowed)
+            val errorResponse: ErrorResponse = responseAs[ErrorResponse]
+            assert(
+              errorResponse.code === "MethodNotAllowedErrorHttp" &&
+              errorResponse.message === "User cannot delete himself"
+            )
+          }
         }
       }
     }

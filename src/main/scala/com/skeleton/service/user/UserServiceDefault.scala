@@ -66,4 +66,12 @@ class UserServiceDefault(val userPersistence: UserPersistence) extends UserServi
         case Left(error) => Left(error)
       }
 
+  def deleteAllUsers(): Future[Either[DatabaseError, Boolean]] =
+    userPersistence.deleteAllUsers().map {
+      case Right(value) =>
+        logger.info(s"[${this.getClass.getSimpleName}] successfully delete all users")
+        Right(value)
+      case Left(error) => Left(error)
+    }
+
 }
