@@ -16,25 +16,25 @@ object JWTUtils extends LazyLogging {
 
   val config: Config = ConfigFactory.load()
 
-  private val tokenPrefix            = config.getString("authentication.token.prefix")
-  private val secretKey              = config.getString("authentication.token.secret")
-  private val algorithm              = JwtAlgorithm.HS256
-  private val acceptedAlgorithms     = Seq(algorithm)
-  private val accessTokenExpiration  = config.getInt("authentication.token.access")
-  private val refreshTokenExpiration = config.getInt("authentication.token.refresh")
+  private val tokenPrefix: String                              = config.getString("authentication.token.prefix")
+  private val secretKey: String                                = config.getString("authentication.token.secret")
+  private val algorithm: JwtAlgorithm.HS256.type               = JwtAlgorithm.HS256
+  private val acceptedAlgorithms: Seq[JwtAlgorithm.HS256.type] = Seq(algorithm)
+  private val accessTokenExpiration: Int                       = config.getInt("authentication.token.access")
+  private val refreshTokenExpiration: Int                      = config.getInt("authentication.token.refresh")
 
   implicit val clock: Clock = Clock.systemDefaultZone()
 
   def getAccessToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, accessTokenExpiration)
-    val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    val jwtToken: String   = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     logger.info(s"[${this.getClass.getSimpleName}] successfully generate an access token for the user with uuid: $userId")
     Token(s"$tokenPrefix$jwtToken", accessTokenExpiration)
   }
 
   def getRefreshToken(userId: UUID, role: String): Token = {
     val jwtClaim: JwtClaim = issueJWT(userId, role, refreshTokenExpiration)
-    val jwtToken           = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
+    val jwtToken: String   = Jwt.encode(jwtClaim, secretKey, JwtAlgorithm.HS256)
     logger.info(s"[${this.getClass.getSimpleName}] successfully generate an refresh token for the user with uuid: $userId")
     Token(s"$tokenPrefix$jwtToken", refreshTokenExpiration)
   }

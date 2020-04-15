@@ -2,9 +2,9 @@
 <configuration>
     <appender name="logstash" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
         <destination>127.0.0.1:5000</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder" />
+        <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder"/>
         <keepAliveDuration>2 minutes</keepAliveDuration>
     </appender>
 
-    <appender-ref ref="logstash" />
+    <appender-ref ref="logstash"/>
 </configuration>

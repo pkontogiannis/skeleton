@@ -22,6 +22,8 @@ object ITTestData {
     role      = roles.head
   )
 
+  def generateRandomEmail: String = Random.alphanumeric.filter(_.isLetter).take(10).mkString("") + "@" + "skeleton.com"
+
   def userCreate2: UserCreate = UserCreate(
     email     = generateRandomEmail,
     firstName = "Manos",
@@ -38,7 +40,5 @@ object ITTestData {
       lastName  = userCreate.lastName,
       role      = userCreate.role
     )
-
-  def generateRandomEmail: String = Random.alphanumeric.filter(_.isLetter).take(10).mkString("") + "@" + "skeleton.com"
 
 }

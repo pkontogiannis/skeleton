@@ -22,4 +22,6 @@ trait UserService extends LazyLogging {
 
   def deleteUser(userId: UUID, connectedUserId: UUID): Future[Either[ServiceError, Boolean]]
 
+  def deleteAllUsers(): Future[Either[DatabaseError, Boolean]]
+
 }
