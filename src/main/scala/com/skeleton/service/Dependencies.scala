@@ -19,7 +19,7 @@ object Dependencies {
 
     val userService   = new UserServiceDefault(userPersistence)
     val authService   = new AuthServiceDefault(userPersistence)
-    val healthService = new HealthServiceDefault
+    val healthService = new HealthServiceDefault(dbAccess)
 
     Dependencies(dbAccess, userService, authService, healthService)
   }

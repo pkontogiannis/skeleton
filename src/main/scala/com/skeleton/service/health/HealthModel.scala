@@ -1,7 +1,6 @@
 package com.skeleton.service.health
 
 import akka.http.scaladsl.model.StatusCodes
-import io.circe.Encoder
 
 object HealthModel {
 
@@ -9,12 +8,9 @@ object HealthModel {
 
   object HealthStatus {
 
-    implicit val encodeFieldType: Encoder[HealthStatus] =
-      Encoder.forProduct2("status", "state")(HealthStatus.unapply(_).get)
-
-    val OK   = HealthStatus(StatusCodes.OK.intValue, "OK")
-    val DOWN = HealthStatus(StatusCodes.InternalServerError.intValue, "DOWN")
-    val INIT = HealthStatus(
+    val OK: HealthStatus   = HealthStatus(StatusCodes.OK.intValue, "OK")
+    val DOWN: HealthStatus = HealthStatus(StatusCodes.InternalServerError.intValue, "DOWN")
+    val INIT: HealthStatus = HealthStatus(
       StatusCodes.ServiceUnavailable.intValue,
       "INITIALIZING"
     )

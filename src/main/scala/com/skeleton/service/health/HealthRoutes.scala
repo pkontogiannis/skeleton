@@ -1,7 +1,9 @@
 package com.skeleton.service.health
 
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 import com.skeleton.service.Routes
+import com.skeleton.service.health.HealthModel.HealthStatus
 
 class HealthRoutes(val healthService: HealthService) extends Routes {
 
@@ -16,7 +18,7 @@ class HealthRoutes(val healthService: HealthService) extends Routes {
     path("live") {
       pathEndOrSingleSlash {
         get {
-          complete(healthService.live)
+          complete(StatusCodes.OK)
         }
       }
     }
@@ -25,7 +27,7 @@ class HealthRoutes(val healthService: HealthService) extends Routes {
     path("ready") {
       pathEndOrSingleSlash {
         get {
-          complete(healthService.ready)
+          complete(HealthStatus.unapply(healthService.ready).get)
         }
       }
     }

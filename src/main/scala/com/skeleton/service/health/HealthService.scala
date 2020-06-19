@@ -5,8 +5,6 @@ import com.typesafe.scalalogging.LazyLogging
 
 trait HealthService extends LazyLogging {
 
-  def live: HealthStatus
-
   def ready: HealthStatus
 
 }

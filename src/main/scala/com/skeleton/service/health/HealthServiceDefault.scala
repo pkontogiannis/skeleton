@@ -1,20 +1,32 @@
 package com.skeleton.service.health
 
-import java.lang.management.ManagementFactory
-
 import com.skeleton.service.health.HealthModel.HealthStatus
-import com.zaxxer.hikari.HikariPoolMXBean
-import javax.management.{ JMX, ObjectName }
+import com.skeleton.utils.database.DBAccess
+import slick.jdbc.PostgresProfile.api._
 
-class HealthServiceDefault extends HealthService {
-  private lazy val poolProxy = JMX.newMXBeanProxy(
-    ManagementFactory.getPlatformMBeanServer,
-    new ObjectName("com.zaxxer.hikari:type=Pool (database)"),
-    classOf[HikariPoolMXBean]
-  )
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import scala.util.{ Failure, Success, Try }
 
-  def live: HealthStatus = HealthStatus.OK
+class HealthServiceDefault(val dbAccess: DBAccess) extends HealthService {
 
-  def ready: HealthStatus = if (poolProxy.getTotalConnections > 0) HealthStatus.OK else HealthStatus.INIT
+  private lazy val maxWait = 100 milliseconds
+
+  def ready: HealthStatus = {
+    val q = sql"SELECT 1".as[Int]
+    val f = dbAccess.db
+      .run(q.asTry)
+      .map {
+        case Success(_) => HealthStatus.OK
+        case Failure(_) => HealthStatus.DOWN
+      }
+
+    Try(Await.result(f, maxWait)) match {
+      case Success(healthStatus) => healthStatus
+      case Failure(_) => HealthStatus.DOWN
+    }
+  }
 
 }
