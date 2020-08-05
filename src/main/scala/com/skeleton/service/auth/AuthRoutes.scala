@@ -9,6 +9,7 @@ import com.skeleton.service.errors.{ ErrorMapper, ErrorResponse, HttpError, Serv
 import com.skeleton.service.swagger.SwaggerData._
 import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
 import com.skeleton.service.{ Routes, SecuredRoutes }
+import com.skeleton.utils.oauth2.OAuth2Authorization
 import com.skeleton.utils.swagger.SwaggerSecurity
 import io.circe.generic.auto._
 import io.swagger.v3.oas.annotations.Operation
@@ -24,7 +25,7 @@ import scala.concurrent.Future
 import scala.util.{ Failure, Success }
 
 @Tags(Array(new Tag(name = "Authentication")))
-class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes with SwaggerSecurity {
+class AuthRoutes(val authService: AuthService) extends Routes with OAuth2Authorization with SwaggerSecurity {
 
   val authorizationList = List("admin", "developer")
 
@@ -271,10 +272,10 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
 
   def tokenManagement: Route =
     pathPrefix("token") {
-      authorized(authorizationList) { clms =>
+      authorizeTokenWithRole(authorizationList) { clms =>
         val claims = Map(
-          "userId" -> clms("userId").toString,
-          "role" -> clms("role").toString
+          "userId" -> clms.id,
+          "role" -> clms.roles.toString() //TODO: check for another type
         )
         getAccessToken(claims) ~ getRefreshToken(claims)
       }
@@ -421,7 +422,5 @@ class AuthRoutes(val authService: AuthService) extends Routes with SecuredRoutes
         }
       }
     }
-
-  //  }
 
 }

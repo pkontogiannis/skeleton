@@ -65,6 +65,10 @@ libraryDependencies ++= {
     "com.pauldijou" %% "jwt-core"  % jwtVersion,
     "com.pauldijou" %% "jwt-circe" % jwtVersion,
     "org.typelevel" %% "cats-core" % catsVersion,
+    //keycloak
+    "org.keycloak"      % "keycloak-adapter-core" % "10.0.2",
+    "org.keycloak"      % "keycloak-core"         % "10.0.2",
+    "org.jboss.logging" % "jboss-logging"         % "3.4.1.Final",
     // monitoring
     "io.kamon" %% "kamon-bundle"     % kamonBundleVersion,
     "io.kamon" %% "kamon-prometheus" % kamonPrometheusVersion,

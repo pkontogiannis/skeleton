@@ -51,6 +51,21 @@ services:
     depends_on:
       - skeletondb
 
+  keycloak:
+    image: jboss/keycloak
+    ports:
+      - 8070:8080
+    environment:
+      KEYCLOAK_USER: root
+      KEYCLOAK_PASSWORD: root
+      DB_VENDOR: postgres
+      DB_ADDR: skeletondb
+      DB_USER: skeletondb
+      DB_PASSWORD: skeletondb
+    hostname: keycloak
+    depends_on:
+      - skeletondb
+
   prometheus:
     image: prom/prometheus:v2.17.1
     volumes:
