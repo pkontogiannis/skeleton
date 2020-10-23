@@ -40,6 +40,21 @@ class UserRoutesSpec extends ServiceSuite {
       }
     }
 
+    "successfully creates a user 1" in new Fixture {
+      val user: UserCreate      = itData.userCreate1
+      val expectedUser: UserDto = itData.expectedUser(user)
+      val accessToken: Token    = JWTUtils.getAccessToken(UUID.randomUUID(), itData.roles.head)
+
+      Post("/api/v01/users", user) ~> RawHeader("Authorization", accessToken.token) ~> userRoutes ~> check {
+        handled shouldBe true
+        status should ===(StatusCodes.Created)
+        val resultUser: UserDto = responseAs[UserDto]
+        assert(
+          resultUser.email === expectedUser.email
+        )
+      }
+    }
+
     "successfully handles a user with an existent email" in new Fixture {
       val user: UserCreate      = itData.userCreate1
       val expectedUser: UserDto = itData.expectedUser(user)

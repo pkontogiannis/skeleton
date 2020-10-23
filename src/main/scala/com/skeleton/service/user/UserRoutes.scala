@@ -5,10 +5,11 @@ import java.util.UUID
 import akka.http.scaladsl.marshalling.ToEntityMarshaller
 import akka.http.scaladsl.model.{ StatusCode, StatusCodes }
 import akka.http.scaladsl.server.Route
-import com.skeleton.service.errors.{ ErrorMapper, ErrorResponse, HttpError, ServiceError }
+import cats.data.Validated
+import com.skeleton.service.errors._
 import com.skeleton.service.swagger.SwaggerData._
 import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
-import com.skeleton.service.{ Routes, SecuredRoutes }
+import com.skeleton.service.{ Routes, RoutesHelpers, SecuredRoutes }
 import com.skeleton.utils.swagger.SwaggerSecurity
 import io.circe.generic.auto._
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -26,7 +27,7 @@ import scala.util.{ Failure, Success }
 
 @SecurityRequirement(name = "bearerAuth")
 @Tags(Array(new Tag(name = "User")))
-class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes with SwaggerSecurity {
+class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes with SwaggerSecurity with RoutesHelpers {
 
   //  val userRoutes: Route = internal.routes
   val userRoutes: Route = routes
@@ -277,11 +278,16 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
   def postUser: Route =
     post {
       entity(as[UserCreate]) { userCreate =>
-        onComplete(userService.createUser(userCreate)) {
-          case Success(future) =>
-            completeEither(StatusCodes.Created, future)
-          case Failure(ex) =>
-            complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
+        userCreate.validate match {
+          case Validated.Valid(validatedUserCreate) =>
+            onComplete(userService.createUser(validatedUserCreate)) {
+              case Success(future) =>
+                completeEither(StatusCodes.Created, future)
+              case Failure(ex) =>
+                complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
+            }
+          case Validated.Invalid(e) =>
+            completeWithValidationErrors(e)
         }
       }
     }

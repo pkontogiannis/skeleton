@@ -2,6 +2,8 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
+import cats.data.Validated
+import com.skeleton.utils.validators.{ InputValidators, ObjectsValidators }
 import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -44,7 +46,19 @@ object UserModel {
 
   case class UserDto(userId: UUID, email: String, firstName: String, lastName: String, role: String)
 
-  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String)
+  case class UserCreate(email: String, firstName: String, lastName: String, password: String, role: String) {
+    def validate =
+//      ObjectsValidators.validateUserCreate(this)
+      ObjectsValidators.validateUserCreate(this) match {
+        case Validated.Valid(userCreate) => Right(userCreate)
+        case Validated.Invalid(e) =>
+          Left(
+            e.toNonEmptyList.toList
+              .mkString(", ")
+          )
+      }
+
+  }
 
   implicit def userToUserDto(user: User): UserDto =
     UserDto(
