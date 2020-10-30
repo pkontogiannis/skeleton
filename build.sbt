@@ -4,42 +4,42 @@ version := "0.1"
 
 scalaVersion := "2.13.2"
 
-lazy val akkaHttpVersion        = "10.1.12"
-lazy val akkaVersion            = "2.6.6"
-lazy val scalaTestVersion       = "3.2.0"
-lazy val argonautVersion        = "6.2.5"
-lazy val slickVersion           = "3.3.2"
-lazy val flywayVersion          = "6.4.4"
-lazy val jwtVersion             = "4.3.0"
-lazy val circeVersion           = "0.13.0"
-lazy val circeExtra             = "1.33.0"
-lazy val h2Version              = "1.4.200"
-lazy val catsVersion            = "2.1.1"
-lazy val scalaCheck             = "1.14.3"
-lazy val postgresVersion        = "42.2.14"
-lazy val logbackClassicVersion  = "1.2.3"
-lazy val scalaLoggingVersion    = "3.9.2"
-lazy val logbackEncoderVersion  = "6.4"
-lazy val janinoVersion          = "3.1.2"
-lazy val kamonBundleVersion     = "2.1.1"
-lazy val kamonPrometheusVersion = "2.1.1"
-lazy val kamonJaegerVersion     = "2.1.1"
+lazy val akkaHttpVersion = "10.2.1"
+lazy val akkaVersion = "2.6.10"
+lazy val scalaTestVersion = "3.2.2"
+lazy val argonautVersion = "6.2.5"
+lazy val slickVersion = "3.3.3"
+lazy val flywayVersion = "6.4.4"
+lazy val jwtVersion = "4.3.0"
+lazy val circeVersion = "0.13.0"
+lazy val circeExtra = "1.35.2"
+lazy val h2Version = "1.4.200"
+lazy val catsVersion = "2.2.0"
+lazy val scalaCheck = "1.14.3"
+lazy val postgresVersion = "42.2.18"
+lazy val logbackClassicVersion = "1.2.3"
+lazy val scalaLoggingVersion = "3.9.2"
+lazy val logbackEncoderVersion = "6.4"
+lazy val janinoVersion = "3.1.2"
+lazy val kamonBundleVersion = "2.1.8"
+lazy val kamonPrometheusVersion = "2.1.8"
+lazy val kamonJaegerVersion = "2.1.8"
 
-lazy val akkaHttpSwaggerVersion  = "2.1.1"
-lazy val akkaScalaSwaggerVersion = "2.1.2"
-lazy val swaggerVersion          = "2.1.2"
-lazy val jaxRSVersion            = "2.1.1"
-lazy val akkaHttpCorsVersion     = "1.0.0"
-lazy val swaggerUiVersion        = "1.4.0"
+lazy val akkaHttpSwaggerVersion = "2.2.0"
+lazy val akkaScalaSwaggerVersion = "2.1.3"
+lazy val swaggerVersion = "2.1.5"
+lazy val jaxRSVersion = "2.1.1"
+lazy val akkaHttpCorsVersion = "1.1.0"
+lazy val swaggerUiVersion = "1.6.2"
 
 scalacOptions += "-deprecation"
 
 libraryDependencies ++= {
   Seq(
-    "com.typesafe.akka" %% "akka-http"           % akkaHttpVersion,
-    "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
-    "com.typesafe.akka" %% "akka-http-testkit"   % akkaHttpVersion % "it,test",
-    "com.typesafe.akka" %% "akka-testkit"        % akkaVersion % "it,test",
+    "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "it,test",
+    "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "it,test",
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % "it,test",
     // Scala Test
     "org.scalatest"  %% "scalatest"  % scalaTestVersion % "it,test",

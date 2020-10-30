@@ -1,6 +1,6 @@
 package com.skeleton.utils.server
 
-import com.typesafe.config.{ Config => TSConfig }
+import com.typesafe.config.{Config => TSConfig}
 
 case class ServerConfig(host: String, version: String, port: Int)
 

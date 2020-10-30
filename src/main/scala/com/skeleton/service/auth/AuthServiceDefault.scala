@@ -5,7 +5,7 @@ import java.util.UUID
 import com.skeleton.service.errors.DatabaseError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel
-import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
+import com.skeleton.service.user.UserModel.{Token, UserCreate, UserDto, UserLogin, UserLoginDto}
 import com.skeleton.service.user.persistence.UserPersistence
 import com.skeleton.utils.jwt.JWTUtils
 

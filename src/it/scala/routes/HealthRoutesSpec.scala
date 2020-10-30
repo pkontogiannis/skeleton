@@ -4,9 +4,9 @@ import java.lang.management.ManagementFactory
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
-import com.skeleton.service.health.{ HealthRoutes, HealthService }
+import com.skeleton.service.health.{HealthRoutes, HealthService}
 import com.zaxxer.hikari.HikariPoolMXBean
-import javax.management.{ JMX, ObjectName }
+import javax.management.{JMX, ObjectName}
 import routes.helpers.ServiceSuite
 
 class HealthRoutesSpec extends ServiceSuite {

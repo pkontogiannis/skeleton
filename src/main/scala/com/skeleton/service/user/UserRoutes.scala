@@ -2,27 +2,25 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
-import akka.http.scaladsl.marshalling.ToEntityMarshaller
-import akka.http.scaladsl.model.{ StatusCode, StatusCodes }
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
-import com.skeleton.service.errors.{ ErrorMapper, ErrorResponse, HttpError, ServiceError }
+import com.skeleton.service.Routes.extractClaims
+import com.skeleton.service.errors.HttpError
 import com.skeleton.service.swagger.SwaggerData._
-import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
-import com.skeleton.service.{ Routes, SecuredRoutes }
+import com.skeleton.service.user.UserModel.{UpdateUser, UserCreate, UserDto}
+import com.skeleton.service.{Routes, SecuredRoutes}
 import com.skeleton.utils.swagger.SwaggerSecurity
 import io.circe.generic.auto._
 import io.swagger.v3.oas.annotations.enums.ParameterIn
-import io.swagger.v3.oas.annotations.media.{ Content, ExampleObject, Schema }
+import io.swagger.v3.oas.annotations.media.{Content, ExampleObject, Schema}
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import io.swagger.v3.oas.annotations.tags.{ Tag, Tags }
-import io.swagger.v3.oas.annotations.{ Operation, Parameter }
+import io.swagger.v3.oas.annotations.tags.{Tag, Tags}
+import io.swagger.v3.oas.annotations.{Operation, Parameter}
 import javax.ws.rs._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 @SecurityRequirement(name = "bearerAuth")
 @Tags(Array(new Tag(name = "User")))
@@ -33,16 +31,6 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
   val authorizationList = List("admin", "developer")
 
   //  private object internal {
-
-  implicit val httpErrorMapper: ErrorMapper[ServiceError, HttpError] =
-    Routes.buildErrorMapper(ServiceError.httpErrorMapper)
-
-  implicit class ErrorOps[E <: ServiceError, A](result: Future[Either[E, A]]) {
-    def toRestError[G <: HttpError](implicit errorMapper: ErrorMapper[E, G]): Future[Either[G, A]] = result.map {
-      case Left(error) => Left(errorMapper(error))
-      case Right(value) => Right(value)
-    }
-  }
 
   def routes: Route =
     pathPrefix("api" / version)(
@@ -118,13 +106,6 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
         }
       )
     }
-
-  def extractClaims(claims: Map[String, Any]): (UUID, String) = {
-    val connectedUserId   = UUID.fromString(claims("userId").toString)
-    val connectedUserRole = claims("role").toString
-    (connectedUserId, connectedUserRole)
-  }
-
   @GET
   @Path("/api/v01/users")
   @Produces(Array("application/json"))
@@ -181,19 +162,6 @@ class UserRoutes(val userService: UserService) extends Routes with SecuredRoutes
           complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
       }
     )
-
-  def completeEither[E <: ServiceError, R: ToEntityMarshaller](statusCode: StatusCode, either: => Either[E, R])(
-      implicit mapper: ErrorMapper[E, HttpError]
-  ): Route =
-    either match {
-      case Right(value) =>
-        complete(statusCode, value)
-      case Left(value) =>
-        complete(
-          value.statusCode,
-          ErrorResponse(code = value.code, message = value.message)
-        )
-    }
 
   @POST
   @Path("/api/v01/users")

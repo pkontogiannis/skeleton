@@ -2,9 +2,9 @@ package com.skeleton.service.user
 
 import java.util.UUID
 
-import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, MethodNotAllowed }
-import com.skeleton.service.errors.{ DatabaseError, ServiceError }
-import com.skeleton.service.user.UserModel.{ UpdateUser, UserCreate, UserDto }
+import com.skeleton.service.errors.ServiceError.{GenericDatabaseError, MethodNotAllowed}
+import com.skeleton.service.errors.{DatabaseError, ServiceError}
+import com.skeleton.service.user.UserModel.{UpdateUser, UserCreate, UserDto}
 import com.skeleton.service.user.persistence.UserPersistence
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -3,7 +3,7 @@ package com.skeleton.utils.jwt
 import java.util.UUID
 
 import com.skeleton.service.user.UserModel
-import com.typesafe.config.{ Config, ConfigFactory }
+import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.funspec.AnyFunSpecLike
 
 import scala.jdk.CollectionConverters._

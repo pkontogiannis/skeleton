@@ -2,8 +2,8 @@ package routes.helpers
 
 import java.util.UUID
 
-import com.skeleton.service.user.UserModel.{ UserCreate, UserDto }
-import com.typesafe.config.{ Config, ConfigFactory }
+import com.skeleton.service.user.UserModel.{UserCreate, UserDto}
+import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.jdk.CollectionConverters._
 import scala.util.Random

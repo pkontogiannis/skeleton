@@ -82,12 +82,12 @@ services:
     image: prom/alertmanager
     ports:
       - 9093:9093
-#    volumes:
-#      - ./alertmanager/:/etc/alertmanager/
+    #    volumes:
+    #      - ./alertmanager/:/etc/alertmanager/
     restart: always
-#    command:
-#      - '--config.file=/etc/alertmanager/config.yml'
-#      - '--storage.path=/alertmanager'
+  #    command:
+  #      - '--config.file=/etc/alertmanager/config.yml'
+  #      - '--storage.path=/alertmanager'
 
   grafana:
     image: grafana/grafana:6.7.2
@@ -131,7 +131,7 @@ services:
       - "9300:9300"
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-#      ELASTIC_PASSWORD: root
+      #      ELASTIC_PASSWORD: root
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node

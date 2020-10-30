@@ -1,6 +1,6 @@
 package com.skeleton.utils.server
 
-import com.typesafe.config.{ Config => TSConfig }
+import com.typesafe.config.{Config => TSConfig}
 
 case class DatabaseConfig(driver: String, url: String, username: String, password: String, profile: String)
 

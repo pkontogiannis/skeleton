@@ -2,11 +2,11 @@ package routes.helpers
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.skeleton.service.{ Dependencies, Routes }
+import com.skeleton.service.{Dependencies, Routes}
 import com.skeleton.utils.database.Migration
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

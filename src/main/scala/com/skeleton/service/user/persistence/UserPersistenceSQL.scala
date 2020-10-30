@@ -3,14 +3,14 @@ package com.skeleton.service.user.persistence
 import java.util.UUID
 
 import com.skeleton.service.errors.DatabaseError
-import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, RecordAlreadyExists, RecordNotFound }
+import com.skeleton.service.errors.ServiceError.{GenericDatabaseError, RecordAlreadyExists, RecordNotFound}
 import com.skeleton.service.user.UserModel
-import com.skeleton.service.user.UserModel.{ UpdateUser, User, UserCreate }
+import com.skeleton.service.user.UserModel.{UpdateUser, User, UserCreate}
 import com.skeleton.utils.database.DBAccess
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
 
@@ -157,6 +157,9 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
   private def getUserQuery(userId: UUID): DBIO[Option[User]] =
     getUserOf(userId).result.headOption
 
+  private def getUserOf(userId: UUID): UserSelection =
+    Users.filter(_.userId === userId)
+
   def deleteUser(userId: UUID): Future[Either[DatabaseError, Boolean]] =
     db.run(getUserOf(userId).delete).transformWith {
       case Success(res) =>
@@ -166,9 +169,6 @@ class UserPersistenceSQL(val dbAccess: DBAccess) extends UserPersistence {
         }
       case Failure(_) => Future.successful(Left(GenericDatabaseError))
     }
-
-  private def getUserOf(userId: UUID): UserSelection =
-    Users.filter(_.userId === userId)
 
   def deleteAllUsers(): Future[Either[DatabaseError, Boolean]] =
     db.run(Users.delete).transformWith {

@@ -5,7 +5,7 @@ import java.util.UUID
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import pdi.jwt.JwtClaim
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 case class Claims(subject: UUID, issuedAt: Long, expires: Long, issuer: String)
 

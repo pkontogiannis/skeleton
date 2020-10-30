@@ -5,13 +5,13 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server._
-import com.skeleton.service.auth.{ AuthRoutes, AuthService }
+import com.skeleton.service.auth.{AuthRoutes, AuthService}
 import com.skeleton.service.errors.ErrorResponse
-import com.skeleton.service.user.UserModel.{ Token, UpdateUser, UserCreate, UserDto, UserLogin, UserLoginDto }
-import com.skeleton.service.user.{ UserRoutes, UserService }
+import com.skeleton.service.user.UserModel.{Token, UpdateUser, UserCreate, UserDto, UserLogin, UserLoginDto}
+import com.skeleton.service.user.{UserRoutes, UserService}
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
-import routes.helpers.{ ServiceSuite, ITTestData => itData }
+import routes.helpers.{ServiceSuite, ITTestData => itData}
 
 class UserRoutesSpec extends ServiceSuite {
 

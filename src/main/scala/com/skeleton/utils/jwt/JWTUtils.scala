@@ -6,11 +6,11 @@ import java.util.UUID
 import com.skeleton.service.errors.ServiceError
 import com.skeleton.service.errors.ServiceError.AuthenticationError
 import com.skeleton.service.user.UserModel.Token
-import com.typesafe.config.{ Config, ConfigFactory }
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
-import pdi.jwt.{ Jwt, JwtAlgorithm, JwtCirce, JwtClaim }
+import pdi.jwt.{Jwt, JwtAlgorithm, JwtCirce, JwtClaim}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 object JWTUtils extends LazyLogging {
 

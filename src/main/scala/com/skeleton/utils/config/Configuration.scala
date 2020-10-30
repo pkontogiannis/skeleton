@@ -1,9 +1,9 @@
 package com.skeleton.utils.config
 
-import com.skeleton.utils.server.{ DatabaseConfig, ServerConfig }
+import com.skeleton.utils.server.{DatabaseConfig, ServerConfig}
 import com.typesafe.config.ConfigFactory
 
-import scala.concurrent.duration.{ FiniteDuration, MILLISECONDS }
+import scala.concurrent.duration.{FiniteDuration, MILLISECONDS}
 
 case class Configuration(
     initializationTimeoutConfiguration: FiniteDuration,

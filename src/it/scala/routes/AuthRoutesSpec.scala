@@ -5,18 +5,18 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
 import akka.http.scaladsl.server._
-import com.skeleton.service.auth.{ AuthRoutes, AuthService }
-import com.skeleton.service.user.UserModel.{ Token, UserCreate, UserDto, UserLogin, UserLoginDto }
+import com.skeleton.service.auth.{AuthRoutes, AuthService}
+import com.skeleton.service.user.UserModel.{Token, UserCreate, UserDto, UserLogin, UserLoginDto}
 import com.skeleton.utils.jwt.JWTUtils
 import io.circe.generic.auto._
-import routes.helpers.{ ServiceSuite, ITTestData => itData }
+import routes.helpers.{ServiceSuite, ITTestData => itData}
 
 class AuthRoutesSpec extends ServiceSuite {
 
   trait Fixture {
     dependencies.userService.deleteAllUsers()
     val authService: AuthService = dependencies.authService
-    val authRoutes: Route        = new AuthRoutes(authService).authRoutes
+    val authRoutes: Route = new AuthRoutes(authService).authRoutes
   }
 
   "Auth Routes" should {

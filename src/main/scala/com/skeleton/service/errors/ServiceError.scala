@@ -1,6 +1,6 @@
 package com.skeleton.service.errors
 
-import com.skeleton.service.errors.ServiceError.{ GenericDatabaseError, RecordNotFound }
+import com.skeleton.service.errors.ServiceError.{GenericDatabaseError, RecordNotFound}
 
 sealed trait ServiceError
 

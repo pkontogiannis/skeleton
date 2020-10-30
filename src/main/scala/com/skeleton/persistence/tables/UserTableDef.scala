@@ -1,4 +1,4 @@
-package com.skeleton.service.user.persistence
+package com.skeleton.persistence.tables
 
 import java.util.UUID
 

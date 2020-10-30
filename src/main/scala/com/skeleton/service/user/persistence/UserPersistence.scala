@@ -3,7 +3,7 @@ package com.skeleton.service.user.persistence
 import java.util.UUID
 
 import com.skeleton.service.errors.DatabaseError
-import com.skeleton.service.user.UserModel.{ UpdateUser, User, UserCreate }
+import com.skeleton.service.user.UserModel.{UpdateUser, User, UserCreate}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Future

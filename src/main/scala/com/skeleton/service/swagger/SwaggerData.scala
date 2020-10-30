@@ -1,8 +1,6 @@
 package com.skeleton.service.swagger
 
 import com.skeleton.service.user.UserModel.UserCreate
-import io.circe.generic.auto._
-import io.circe.syntax._
 
 object SwaggerData {
 
